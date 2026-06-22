@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS sekolah_nama_trgm_idx;

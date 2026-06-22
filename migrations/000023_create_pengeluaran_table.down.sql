@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS pengeluaran_harian;

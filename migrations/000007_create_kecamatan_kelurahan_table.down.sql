@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS kecamatan;
+DROP TABLE IF EXISTS kelurahan;
