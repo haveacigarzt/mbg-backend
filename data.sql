@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict YIGuEs4fMvYa0rwCQjyqwIH3LPqeu8SGIzxVS9aSRmfHBDnU0Qm5SRqgSP5TiIA
+\restrict pExNhP8HmYQzhPkyvL1sxwBO0GkfQhxR6u9XZdA9acKzHq4leWR4c8bBYpkqAV3
 
 -- Dumped from database version 18.3
 -- Dumped by pg_dump version 18.3
@@ -23,10 +23,6 @@ SET row_security = off;
 -- Data for Name: kecamatan; Type: TABLE DATA; Schema: public; Owner: rian
 --
 
-SET SESSION AUTHORIZATION DEFAULT;
-
-ALTER TABLE public.kecamatan DISABLE TRIGGER ALL;
-
 INSERT INTO public.kecamatan (id, created_at, name, version) VALUES (1, '2026-05-24 22:58:08+07', 'TOBA', 1);
 INSERT INTO public.kecamatan (id, created_at, name, version) VALUES (2, '2026-05-24 22:58:08+07', 'MELIAU', 1);
 INSERT INTO public.kecamatan (id, created_at, name, version) VALUES (3, '2026-05-24 22:58:08+07', 'KAPUAS', 1);
@@ -44,13 +40,9 @@ INSERT INTO public.kecamatan (id, created_at, name, version) VALUES (15, '2026-0
 INSERT INTO public.kecamatan (id, created_at, name, version) VALUES (12, '2026-05-24 22:58:08+07', 'BEDUAI', 2);
 
 
-ALTER TABLE public.kecamatan ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: kelurahan; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.kelurahan DISABLE TRIGGER ALL;
 
 INSERT INTO public.kelurahan (id, created_at, kecamatan_id, name, version) VALUES (1, '2026-05-24 23:07:22+07', 1, 'BAGAN ASAM', 1);
 INSERT INTO public.kelurahan (id, created_at, kecamatan_id, name, version) VALUES (2, '2026-05-24 23:07:22+07', 1, 'TERAJU BARAT', 1);
@@ -218,13 +210,9 @@ INSERT INTO public.kelurahan (id, created_at, kecamatan_id, name, version) VALUE
 INSERT INTO public.kelurahan (id, created_at, kecamatan_id, name, version) VALUES (164, '2026-06-01 16:38:59+07', 3, 'BUNUT', 1);
 
 
-ALTER TABLE public.kelurahan ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.roles DISABLE TRIGGER ALL;
 
 INSERT INTO public.roles (id, name, permissions) VALUES (1, 'admin', '{akunsppg:write,akunsppg:read,sppg:read,sekolah:read,posyandu:read,pengiriman:read,tracking:read}');
 INSERT INTO public.roles (id, name, permissions) VALUES (2, 'stakeholder', '{sppg:read,sekolah:read,posyandu:read,pengiriman:read,tracking:read}');
@@ -232,13 +220,9 @@ INSERT INTO public.roles (id, name, permissions) VALUES (3, 'sppg', '{sppg:read,
 INSERT INTO public.roles (id, name, permissions) VALUES (4, 'driver', '{pengiriman:read,tracking:read,tracking:write,pengiriman:write}');
 
 
-ALTER TABLE public.roles ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.users DISABLE TRIGGER ALL;
 
 INSERT INTO public.users (id, created_at, name, email, password_hash, activated, version, role_id, last_active_at, deleted_at) VALUES (75, '2026-07-02 20:34:02+07', 'Dinas XXX', 'dinasxxx@gmail.com', '\x24326124313224784b6f6731326b664e6f4c74546c42394352516933654935596755547541512e4d512f49634f4e4842444845784b33346d476f6753', true, 1, 2, NULL, NULL);
 INSERT INTO public.users (id, created_at, name, email, password_hash, activated, version, role_id, last_active_at, deleted_at) VALUES (72, '2026-06-26 20:21:38+07', 'sppg_pontianak', 'admin@sppg.example.com', '\x243261243132246b7553496636795553785a707756346535724a4b6f6558717876634e6f655a646232374238426b63564356384a5369507771415061', true, 1, 3, '2026-06-26 23:53:45.60979', NULL);
@@ -259,13 +243,9 @@ INSERT INTO public.users (id, created_at, name, email, password_hash, activated,
 INSERT INTO public.users (id, created_at, name, email, password_hash, activated, version, role_id, last_active_at, deleted_at) VALUES (71, '2026-06-24 20:46:23+07', 'PRAMANA AFRIANDY', 'pramanaafriandy@gmail.id', '\x243261243132246c5a394362444c51496d557750532e775a5933784e754363664d7573586d6f424753634a6c6e71584f6a63737034755451736c6871', true, 2, 3, NULL, '2026-07-04 19:58:43.716467');
 
 
-ALTER TABLE public.users ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: sppg; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.sppg DISABLE TRIGGER ALL;
 
 INSERT INTO public.sppg (id, user_id, created_at, updated_at, nama, alamat, sosmed_url, kepala_sppg, nomor_telepon, email, latitude, longitude, kapasitas_porsi, status_aktif, version, kecamatan_id, kelurahan_id) VALUES (5, 39, '2026-05-26 19:06:45+07', '2026-05-26 19:06:45+07', 'SPPG ILIR KOTA - KOTA SANGGAU', 'Jl. Jenderal Ahmad Yani No.17', '{https://instagram.com/sppgsanggaukpsilirkota}', 'Siti Rahmawati', '081345678901', 'sppg.kapuas.ilirkota@email.com', 0.1235888731544522, 110.60401022845096, 2500, true, 5, 3, 40);
 INSERT INTO public.sppg (id, user_id, created_at, updated_at, nama, alamat, sosmed_url, kepala_sppg, nomor_telepon, email, latitude, longitude, kapasitas_porsi, status_aktif, version, kecamatan_id, kelurahan_id) VALUES (4, 34, '2026-05-26 11:15:10+07', '2026-05-26 11:15:10+07', 'SPPG Bunut Sanggau', 'Jl. Jenderal Ahmad Yani No.17', '{https://www.facebook.com}', 'Budi Santosa', '08123456789', 'sppg.kapuas.ilirkota@email.com', 0.1235888731544522, 110.60401022845096, 1000, true, 27, 3, 41);
@@ -278,13 +258,9 @@ INSERT INTO public.sppg (id, user_id, created_at, updated_at, nama, alamat, sosm
 INSERT INTO public.sppg (id, user_id, created_at, updated_at, nama, alamat, sosmed_url, kepala_sppg, nomor_telepon, email, latitude, longitude, kapasitas_porsi, status_aktif, version, kecamatan_id, kelurahan_id) VALUES (18, 87, '2026-07-02 22:54:38+07', '2026-07-02 22:54:38+07', 'Test 2', 'Jl. Ahmad Yani No. 123, Pontianak', '{https://instagram.com/sppg_pontianak,https://facebook.com/sppg.pontianak}', 'Budi Santoso', '081234567890', 'sppg@example.com', -0.02633, 109.342504, 1500, false, 1, 1, 1);
 
 
-ALTER TABLE public.sppg ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: alokasi_harian; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.alokasi_harian DISABLE TRIGGER ALL;
 
 INSERT INTO public.alokasi_harian (id, sppg_id, tanggal, jumlah, created_at, updated_at) VALUES (1, 5, '2026-06-19', 70000, '2026-06-19 19:19:10.414283', '2026-06-19 19:21:51.775477');
 INSERT INTO public.alokasi_harian (id, sppg_id, tanggal, jumlah, created_at, updated_at) VALUES (2, 5, '2026-06-18', 70000, '2026-06-19 19:21:59.60884', '2026-06-19 19:21:59.60884');
@@ -297,26 +273,18 @@ INSERT INTO public.alokasi_harian (id, sppg_id, tanggal, jumlah, created_at, upd
 INSERT INTO public.alokasi_harian (id, sppg_id, tanggal, jumlah, created_at, updated_at) VALUES (9, 5, '2026-07-13', 200000, '2026-07-13 00:12:11.220373', '2026-07-13 00:12:11.220373');
 
 
-ALTER TABLE public.alokasi_harian ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: drivers; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.drivers DISABLE TRIGGER ALL;
 
 INSERT INTO public.drivers (id, created_at, user_id, sppg_id, nama, nomor_telepon, status_aktif, version) VALUES (8, '2026-05-27 18:34:21.052833+07', 47, 4, 'Budi Santoso', '081234567890', true, 1);
 INSERT INTO public.drivers (id, created_at, user_id, sppg_id, nama, nomor_telepon, status_aktif, version) VALUES (9, '2026-06-02 16:21:12.754789+07', 55, 4, 'Rian', '08123456789', true, 2);
 INSERT INTO public.drivers (id, created_at, user_id, sppg_id, nama, nomor_telepon, status_aktif, version) VALUES (7, '2026-05-27 17:37:41.108617+07', 46, 5, 'Joko Anwar', '082112345978', false, 2);
 
 
-ALTER TABLE public.drivers ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: pedagang_lokal; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.pedagang_lokal DISABLE TRIGGER ALL;
 
 INSERT INTO public.pedagang_lokal (id, nama, alamat, no_hp, longitude, latitude, jenis_produk, sppg_id, created_at, updated_at, version) VALUES (1, 'Toko Sayur Maju', 'Jl. Jenderal Sudirman', '081234567801', 110.598912, 0.124021, 'Sayur', 4, '2026-07-09 13:02:08.061589+07', '2026-07-09 13:02:08.061589+07', 1);
 INSERT INTO public.pedagang_lokal (id, nama, alamat, no_hp, longitude, latitude, jenis_produk, sppg_id, created_at, updated_at, version) VALUES (2, 'UD Berkah Tani', 'Jl. Pangeran Mas', '081234567802', 110.597635, 0.122584, 'Beras', 5, '2026-07-09 13:02:08.061589+07', '2026-07-09 13:02:08.061589+07', 1);
@@ -340,13 +308,9 @@ INSERT INTO public.pedagang_lokal (id, nama, alamat, no_hp, longitude, latitude,
 INSERT INTO public.pedagang_lokal (id, nama, alamat, no_hp, longitude, latitude, jenis_produk, sppg_id, created_at, updated_at, version) VALUES (20, 'UD Sukses Mandiri', 'Jl. Veteran', '081234567820', 110.598008, 0.123726, 'Minyak Goreng', 7, '2026-07-09 13:02:08.061589+07', '2026-07-09 13:02:08.061589+07', 1);
 
 
-ALTER TABLE public.pedagang_lokal ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: sppg_invitations; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.sppg_invitations DISABLE TRIGGER ALL;
 
 INSERT INTO public.sppg_invitations (id, token, nama_sppg, expires_at, used_at, created_at) VALUES (2, 'Zv9DGWJMwZcGTu8B', 'SPPG Bumi Daranante', '2026-07-02 16:39:55.289761+07', NULL, '2026-06-25 16:39:55.290559+07');
 INSERT INTO public.sppg_invitations (id, token, nama_sppg, expires_at, used_at, created_at) VALUES (3, 'uoeqb1oZigQY4U3S', 'SPPG Bukit Bintang', '2026-07-02 16:49:40.918023+07', NULL, '2026-06-25 16:49:40.918704+07');
@@ -357,23 +321,15 @@ INSERT INTO public.sppg_invitations (id, token, nama_sppg, expires_at, used_at, 
 INSERT INTO public.sppg_invitations (id, token, nama_sppg, expires_at, used_at, created_at) VALUES (9, '_NTNKxLARuuKeDC1', 'SPPG RIAN', '2026-07-11 22:08:12.119402+07', NULL, '2026-07-04 22:08:12.119831+07');
 
 
-ALTER TABLE public.sppg_invitations ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: pending_sppg; Type: TABLE DATA; Schema: public; Owner: rian
 --
 
-ALTER TABLE public.pending_sppg DISABLE TRIGGER ALL;
 
-
-
-ALTER TABLE public.pending_sppg ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: pengeluaran_harian; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.pengeluaran_harian DISABLE TRIGGER ALL;
 
 INSERT INTO public.pengeluaran_harian (id, alokasi_harian_id, produk, jumlah, satuan, harga_satuan, created_at, updated_at, pedagang_lokal_id) VALUES (3, 1, 'Beras Premium', 10, 'kg', 18000, '2026-06-20 14:21:29.457244', '2026-06-20 14:21:29.457244', NULL);
 INSERT INTO public.pengeluaran_harian (id, alokasi_harian_id, produk, jumlah, satuan, harga_satuan, created_at, updated_at, pedagang_lokal_id) VALUES (6, 5, 'Pupuk', 90, 'kg', 10000, '2026-06-21 10:59:18.345002', '2026-06-21 10:59:18.345002', NULL);
@@ -391,13 +347,9 @@ INSERT INTO public.pengeluaran_harian (id, alokasi_harian_id, produk, jumlah, sa
 INSERT INTO public.pengeluaran_harian (id, alokasi_harian_id, produk, jumlah, satuan, harga_satuan, created_at, updated_at, pedagang_lokal_id) VALUES (20, 7, 'Bumbu', 50, 'Paket', 10000, '2026-06-24 13:57:18.797557', '2026-06-24 13:57:18.797557', NULL);
 
 
-ALTER TABLE public.pengeluaran_harian ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: pengiriman; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.pengiriman DISABLE TRIGGER ALL;
 
 INSERT INTO public.pengiriman (id, created_at, sppg_id, driver_id, tujuan_type, tujuan_id, status, waktu_berangkat, waktu_selesai, version) VALUES (64, '2026-06-06 15:58:53.873968+07', 5, 7, 'sekolah', 52, 'sampai', '2026-06-06 17:11:53.276059+07', '2026-06-06 17:16:09.937732+07', 3);
 INSERT INTO public.pengiriman (id, created_at, sppg_id, driver_id, tujuan_type, tujuan_id, status, waktu_berangkat, waktu_selesai, version) VALUES (33, '2026-06-05 11:51:22.506847+07', 5, 7, 'sekolah', 42, 'dibatalkan', '2026-06-05 11:54:46.186783+07', '2026-06-05 11:55:01.835926+07', 3);
@@ -557,25 +509,17 @@ INSERT INTO public.pengiriman (id, created_at, sppg_id, driver_id, tujuan_type, 
 INSERT INTO public.pengiriman (id, created_at, sppg_id, driver_id, tujuan_type, tujuan_id, status, waktu_berangkat, waktu_selesai, version) VALUES (185, '2026-07-07 13:22:03.658722+07', 5, NULL, 'posyandu', 8, 'menunggu', NULL, NULL, 1);
 
 
-ALTER TABLE public.pengiriman ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: permissions; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.permissions DISABLE TRIGGER ALL;
 
 INSERT INTO public.permissions (id, code) VALUES (1, 'sekolah:read');
 INSERT INTO public.permissions (id, code) VALUES (2, 'sekolah:write');
 
 
-ALTER TABLE public.permissions ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: posyandu; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.posyandu DISABLE TRIGGER ALL;
 
 INSERT INTO public.posyandu (id, created_at, updated_at, sppg_id, nama, alamat, latitude, longitude, jumlah_balita, jumlah_ibu_hamil, version, kecamatan_id, kelurahan_id) VALUES (6, '2026-05-26 21:10:20+07', '2026-05-26 21:10:20+07', 5, 'Posyandu Melati Ilir Kota', 'Jl. Melati Ilir Kota', 0.1237, 110.6041, 95, 22, 1, 3, 40);
 INSERT INTO public.posyandu (id, created_at, updated_at, sppg_id, nama, alamat, latitude, longitude, jumlah_balita, jumlah_ibu_hamil, version, kecamatan_id, kelurahan_id) VALUES (7, '2026-05-26 21:10:20+07', '2026-05-26 21:10:20+07', 5, 'Posyandu Mawar Ilir Kota', 'Jl. Mawar Ilir Kota', 0.1234, 110.6037, 88, 19, 1, 3, 40);
@@ -585,37 +529,25 @@ INSERT INTO public.posyandu (id, created_at, updated_at, sppg_id, nama, alamat, 
 INSERT INTO public.posyandu (id, created_at, updated_at, sppg_id, nama, alamat, latitude, longitude, jumlah_balita, jumlah_ibu_hamil, version, kecamatan_id, kelurahan_id) VALUES (9, '2026-06-01 17:29:19+07', '2026-06-01 17:29:19+07', 4, 'Posyandu Mawar', 'Jl. Adisucipto Km. 10', 0.1268353398297325, 110.5690282709128, 120, 24, 3, 3, 164);
 
 
-ALTER TABLE public.posyandu ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: produksi_harian; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.produksi_harian DISABLE TRIGGER ALL;
 
 INSERT INTO public.produksi_harian (id, sppg_id, tanggal, waktu_mulai, estimasi_waktu_selesai, created_at, updated_at) VALUES (1, 5, '2026-06-21', '2026-06-21 04:30:00', '2026-06-21 16:50:00', '2026-06-21 01:45:06.052462', '2026-06-21 21:43:40.328191');
 INSERT INTO public.produksi_harian (id, sppg_id, tanggal, waktu_mulai, estimasi_waktu_selesai, created_at, updated_at) VALUES (2, 4, '2026-06-24', '2026-06-24 04:00:00', '2026-06-24 10:00:00', '2026-06-24 13:53:49.193408', '2026-06-24 13:53:49.193408');
 INSERT INTO public.produksi_harian (id, sppg_id, tanggal, waktu_mulai, estimasi_waktu_selesai, created_at, updated_at) VALUES (3, 5, '2026-07-09', '2026-07-09 00:00:00', '2026-07-09 20:00:00', '2026-07-09 12:38:51.488063', '2026-07-09 12:38:51.488063');
 
 
-ALTER TABLE public.produksi_harian ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: schema_migrations; Type: TABLE DATA; Schema: public; Owner: rian
 --
 
-ALTER TABLE public.schema_migrations DISABLE TRIGGER ALL;
-
 INSERT INTO public.schema_migrations (version, dirty) VALUES (34, false);
 
-
-ALTER TABLE public.schema_migrations ENABLE TRIGGER ALL;
 
 --
 -- Data for Name: sekolah; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.sekolah DISABLE TRIGGER ALL;
 
 INSERT INTO public.sekolah (id, created_at, nama, tingkat, jumlah_siswa, latitude, longitude, alamat, version, sppg_id, updated_at, kecamatan_id, kelurahan_id) VALUES (32, '2026-05-26 21:08:41+07', 'SD Negeri 04 Bunut', 'SD', 420, 0.1268353398297325, 110.5690282709128, 'Jl. Bunut 4', 3, 4, '2026-05-26 21:08:41+07', 3, 164);
 INSERT INTO public.sekolah (id, created_at, nama, tingkat, jumlah_siswa, latitude, longitude, alamat, version, sppg_id, updated_at, kecamatan_id, kelurahan_id) VALUES (37, '2026-05-26 21:08:41+07', 'SMP Negeri 04 Bunut', 'SMP', 720, 0.1268353398297325, 110.5690282709128, 'Jl. SMP Bunut 4', 3, 4, '2026-05-26 21:08:41+07', 3, 164);
@@ -638,13 +570,9 @@ INSERT INTO public.sekolah (id, created_at, nama, tingkat, jumlah_siswa, latitud
 INSERT INTO public.sekolah (id, created_at, nama, tingkat, jumlah_siswa, latitude, longitude, alamat, version, sppg_id, updated_at, kecamatan_id, kelurahan_id) VALUES (52, '2026-05-26 21:09:49+07', 'SMA Negeri 03 Ilir Kota', 'SMA', 890, 0.12770046445395156, 110.60128011718128, 'Jl. SMA Ilir Kota 3', 1, 5, '2026-05-26 21:09:49+07', 3, 40);
 
 
-ALTER TABLE public.sekolah ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: tokens; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.tokens DISABLE TRIGGER ALL;
 
 INSERT INTO public.tokens (hash, user_id, expiry, scope) VALUES ('\xa1e0969152d79cfb00adcc941cbcc77193460157408005b873bdf84deda67b01', 34, '2026-06-15 20:53:23+07', 'authentication');
 INSERT INTO public.tokens (hash, user_id, expiry, scope) VALUES ('\xcf993408774a91aa4c4478b0f7f875d49640396cfa2ad533f34c8f31c7bc94c3', 46, '2026-06-19 13:37:54+07', 'authentication');
@@ -826,13 +754,9 @@ INSERT INTO public.tokens (hash, user_id, expiry, scope) VALUES ('\x4a82cd93d768
 INSERT INTO public.tokens (hash, user_id, expiry, scope) VALUES ('\x98fd81c3a98cb0e5f647a12b5f1289d520e8d09d6fb6713d98bed282df890dfe', 46, '2026-07-13 21:13:14+07', 'authentication');
 
 
-ALTER TABLE public.tokens ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: tracking; Type: TABLE DATA; Schema: public; Owner: rian
 --
-
-ALTER TABLE public.tracking DISABLE TRIGGER ALL;
 
 INSERT INTO public.tracking (id, pengiriman_id, latitude, longitude, speed, accuracy, created_at) VALUES (5329, 175, 0.12553523830968352, 110.60227251492037, 20, 5, '2026-07-07 13:58:00.885145+07');
 INSERT INTO public.tracking (id, pengiriman_id, latitude, longitude, speed, accuracy, created_at) VALUES (5330, 175, 0.12594766235108124, 110.6020405258385, 20, 5, '2026-07-07 13:58:11.125496+07');
@@ -1049,18 +973,12 @@ INSERT INTO public.tracking (id, pengiriman_id, latitude, longitude, speed, accu
 INSERT INTO public.tracking (id, pengiriman_id, latitude, longitude, speed, accuracy, created_at) VALUES (5541, 175, 0.12594766235108124, 110.6020405258385, 20, 5, '2026-07-09 12:14:24.403435+07');
 
 
-ALTER TABLE public.tracking ENABLE TRIGGER ALL;
-
 --
 -- Data for Name: users_permissions; Type: TABLE DATA; Schema: public; Owner: rian
 --
 
-ALTER TABLE public.users_permissions DISABLE TRIGGER ALL;
-
 INSERT INTO public.users_permissions (user_id, permission_id) VALUES (37, 1);
 
-
-ALTER TABLE public.users_permissions ENABLE TRIGGER ALL;
 
 --
 -- Name: alokasi_harian_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
@@ -1185,5 +1103,5 @@ SELECT pg_catalog.setval('public.users_id_seq', 87, true);
 -- PostgreSQL database dump complete
 --
 
-\unrestrict YIGuEs4fMvYa0rwCQjyqwIH3LPqeu8SGIzxVS9aSRmfHBDnU0Qm5SRqgSP5TiIA
+\unrestrict pExNhP8HmYQzhPkyvL1sxwBO0GkfQhxR6u9XZdA9acKzHq4leWR4c8bBYpkqAV3
 
