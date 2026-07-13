@@ -1,0 +1,5 @@
+ALTER TABLE sppg
+    ALTER COLUMN nama DROP NOT NULL,
+    ALTER COLUMN alamat DROP NOT NULL,
+    ALTER COLUMN kecamatan_id DROP NOT NULL,
+    ALTER COLUMN kelurahan_id DROP NOT NULL;

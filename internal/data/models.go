@@ -26,6 +26,8 @@ type Models struct {
 	AlokasiHarian     AlokasiHarianModel
 	PengeluaranHarian PengeluaranHarianModel
 	ProduksiHarian    ProduksiHarianModel
+	SPPGInvitations   SPPGInvitationsModel
+	PedagangLokal     PedagangLokalModel
 }
 
 func NewModels(db *sql.DB) Models {
@@ -45,5 +47,7 @@ func NewModels(db *sql.DB) Models {
 		AlokasiHarian:     AlokasiHarianModel{DB: db},
 		PengeluaranHarian: PengeluaranHarianModel{DB: db},
 		ProduksiHarian:    ProduksiHarianModel{DB: db},
+		SPPGInvitations:   SPPGInvitationsModel{DB: db},
+		PedagangLokal:     PedagangLokalModel{DB: db},
 	}
 }

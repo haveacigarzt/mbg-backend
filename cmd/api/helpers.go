@@ -30,6 +30,17 @@ func (app *application) readInt64Param(r *http.Request, key string) (int64, erro
 	return strconv.ParseInt(param, 10, 64)
 }
 
+func (app *application) readStringParam(r *http.Request, name string) (string, error) {
+	params := httprouter.ParamsFromContext(r.Context())
+
+	value := params.ByName(name)
+	if value == "" {
+		return "", errors.New("missing parameter")
+	}
+
+	return value, nil
+}
+
 type envelope map[string]any
 
 func (app *application) writeJSON(w http.ResponseWriter, status int, data any, headers http.Header) error {

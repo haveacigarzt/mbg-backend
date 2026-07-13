@@ -153,7 +153,7 @@ func (m AlokasiHarianModel) GetAll(tanggal string, filters Filters) ([]*AlokasiH
 	SELECT
 		count(*) OVER(),
 		s.id AS sppg_id,
-		s.nama,
+		COALESCE(s.nama, '') AS nama,
 		ah.id,
 		ah.created_at,
 		ah.updated_at,

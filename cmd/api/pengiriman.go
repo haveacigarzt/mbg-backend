@@ -506,7 +506,7 @@ func (app *application) updatePengirimanHandler(w http.ResponseWriter, r *http.R
 
 	// ws
 	payload := map[string]any{
-		"type": "pengiriman:update",
+		"type": "pengiriman:updated",
 		"data": map[string]any{
 			"pengiriman_id":   pengiriman.ID,
 			"status":          pengiriman.Status,
@@ -520,7 +520,7 @@ func (app *application) updatePengirimanHandler(w http.ResponseWriter, r *http.R
 	room := fmt.Sprintf("sppg:%d", pengiriman.SPPGID)
 	app.hub.BroadcastToRoom(room, jsonData)
 	app.hub.BroadcastToRoom("open", jsonData)
-	fmt.Println("pengiriman:update")
+	fmt.Println("pengiriman:updated")
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"pengiriman": pengiriman}, nil)
 	if err != nil {

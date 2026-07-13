@@ -1,0 +1,2 @@
+ALTER TABLE sppg
+    ALTER COLUMN kepala_sppg SET NOT NULL;

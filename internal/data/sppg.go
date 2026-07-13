@@ -15,40 +15,50 @@ type SPPG struct {
 	ID             int64     `json:"id,omitempty"`
 	CreatedAt      time.Time `json:"created_at,omitempty"`
 	UserID         int64     `json:"user_id,omitempty"`
-	Nama           string    `json:"nama,omitempty"`
-	Alamat         string    `json:"alamat,omitempty"`
+	Nama           *string   `json:"nama,omitempty"`
+	Alamat         *string   `json:"alamat,omitempty"`
 	SosmedURL      []string  `json:"sosmed_url,omitempty"`
-	KepalaSPPG     string    `json:"kepala_sppg,omitempty"`
+	KepalaSPPG     *string   `json:"kepala_sppg,omitempty"`
 	NomorTelepon   string    `json:"nomor_telepon,omitempty"`
 	Email          string    `json:"email,omitempty"`
 	Latitude       float64   `json:"latitude,omitempty"`
 	Longitude      float64   `json:"longitude,omitempty"`
 	Kecamatan      string    `json:"kecamatan,omitempty"`
 	Kelurahan      string    `json:"kelurahan,omitempty"`
-	Kecamatan_ID   int64     `json:"kecamatan_id,omitempty"`
-	Kelurahan_ID   int64     `json:"kelurahan_id,omitempty"`
+	Kecamatan_ID   *int64    `json:"kecamatan_id,omitempty"`
+	Kelurahan_ID   *int64    `json:"kelurahan_id,omitempty"`
 	KapasitasPorsi int       `json:"kapasitas_porsi,omitempty"`
 	StatusAktif    bool      `json:"status_aktif,omitempty"`
 	Version        int32     `json:"version,omitempty"`
 }
 
 func ValidateSPPG(v *validator.Validator, sppg *SPPG) {
-	v.Check(sppg.Nama != "", "nama", "must be provided")
-	v.Check(len(sppg.Nama) <= 200, "nama", "must not be more than 200 bytes long")
+	v.Check(sppg.Nama != nil, "nama", "must be provided")
 
-	v.Check(sppg.Alamat != "", "alamat", "must be provided")
-	v.Check(len(sppg.Alamat) <= 500, "alamat", "must not be more than 500 bytes long")
+	if sppg.Nama != nil {
+		v.Check(len(*sppg.Nama) <= 200,
+			"nama",
+			"must not be more than 200 bytes long")
+	}
 
-	v.Check(sppg.KepalaSPPG != "", "kepala_sppg", "must be provided")
-	v.Check(
-		len(sppg.KepalaSPPG) <= 200,
-		"kepala_sppg",
-		"must not be more than 200 bytes long",
-	)
+	v.Check(sppg.Alamat != nil, "alamat", "must be provided")
 
-	v.Check(sppg.Kecamatan_ID != 0, "kecamatan", "must be provided")
+	if sppg.Alamat != nil {
+		v.Check(len(*sppg.Alamat) <= 500,
+			"alamat",
+			"must not be more than 500 bytes long")
+	}
 
-	v.Check(sppg.Kelurahan_ID != 0, "kelurahan", "must be provided")
+	v.Check(sppg.KepalaSPPG != nil, "kepala_sppg", "must be provided")
+
+	if sppg.KepalaSPPG != nil {
+		v.Check(len(*sppg.KepalaSPPG) <= 200,
+			"kepala_sppg",
+			"must not be more than 200 bytes long")
+	}
+
+	v.Check(sppg.Kecamatan_ID != nil, "kecamatan", "must be provided")
+	v.Check(sppg.Kelurahan_ID != nil, "kelurahan", "must be provided")
 
 	v.Check(
 		sppg.NomorTelepon == "" || len(sppg.NomorTelepon) <= 20,
@@ -78,6 +88,34 @@ func ValidateSPPG(v *validator.Validator, sppg *SPPG) {
 		sppg.Longitude >= -180 && sppg.Longitude <= 180,
 		"longitude",
 		"must be between -180 and 180",
+	)
+
+	for _, url := range sppg.SosmedURL {
+		v.Check(
+			validator.IsValidURL(url),
+			"sosmed_url",
+			"must contain valid URLs",
+		)
+	}
+}
+
+func ValidateCreateSPPG(v *validator.Validator, sppg *SPPG) {
+	v.Check(
+		sppg.NomorTelepon == "" || len(sppg.NomorTelepon) <= 20,
+		"nomor_telepon",
+		"must not be more than 20 bytes long",
+	)
+
+	v.Check(
+		sppg.Email == "" || validator.Matches(sppg.Email, validator.EmailRX),
+		"email",
+		"must be a valid email address",
+	)
+
+	v.Check(
+		sppg.KapasitasPorsi >= 0,
+		"kapasitas_porsi",
+		"must be greater than or equal to 0",
 	)
 
 	for _, url := range sppg.SosmedURL {
@@ -216,6 +254,60 @@ func (m SPPGModel) Insert(sppg *SPPG) error {
 	)
 }
 
+func (m SPPGModel) InsertTx(ctx context.Context, tx *sql.Tx, sppg *SPPG) error {
+	query := `
+		INSERT INTO sppg (
+    user_id,
+    nama,
+    alamat,
+    sosmed_url,
+    kepala_sppg,
+    nomor_telepon,
+    email,
+    latitude,
+    longitude,
+    kecamatan_id,
+    kelurahan_id,
+    kapasitas_porsi,
+    status_aktif
+		)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+		RETURNING id, created_at, version
+	`
+
+	args := []any{
+		sppg.UserID,
+		sppg.Nama,
+		sppg.Alamat,
+		sppg.SosmedURL,
+		sppg.KepalaSPPG,
+		sppg.NomorTelepon,
+		sppg.Email,
+		sppg.Latitude,
+		sppg.Longitude,
+		sppg.Kecamatan_ID,
+		sppg.Kelurahan_ID,
+		sppg.KapasitasPorsi,
+		sppg.StatusAktif,
+	}
+
+	err := tx.QueryRowContext(
+		ctx,
+		query,
+		args...,
+	).Scan(
+		&sppg.ID,
+		&sppg.CreatedAt,
+		&sppg.Version,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m SPPGModel) GetAll(nama string, kecamatan_id int64, kelurahan_id int64, status_aktif *bool, filters Filters) ([]*SPPG, Metadata, error) {
 
 	query := fmt.Sprintf(`
@@ -229,9 +321,9 @@ func (m SPPGModel) GetAll(nama string, kecamatan_id int64, kelurahan_id int64, s
 		s.email,
 		s.kapasitas_porsi,
 		s.kecamatan_id,
-		k.name AS kecamatan,
+		COALESCE(k.name, '') AS kecamatan,
 		s.kelurahan_id,
-		kel.name AS kelurahan,
+		COALESCE(kel.name, '') AS kelurahan,
 		s.sosmed_url,
 		s.status_aktif,
 		s.latitude,

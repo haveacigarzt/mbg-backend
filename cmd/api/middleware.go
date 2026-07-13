@@ -152,6 +152,15 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 			}
 			return
 		}
+		go func(userID int64) {
+			if err := app.models.Users.UpdateLastActive(userID); err != nil {
+				app.logger.Error(
+					"failed to update last active",
+					"user_id", userID,
+					"error", err,
+				)
+			}
+		}(user.ID)
 		// Call the contextSetUser() helper to add the user information to the request
 		// context.
 		r = app.contextSetUser(r, user)

@@ -93,7 +93,7 @@ func (app *application) createDriverHandler(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrDuplicateEmail):
-			userValidator.AddError("email", "a user with this email address already exists")
+			userValidator.AddError("email", "Email user yang dikirimkan sudah digunakan oleh akun lain")
 			app.failedValidationResponse(w, r, userValidator.Errors)
 		default:
 			app.serverErrorResponse(w, r, err)

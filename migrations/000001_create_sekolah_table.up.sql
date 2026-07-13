@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS sekolah (
     kecamatan text NOT NULL,
     latitude double precision NOT NULL,
     longitude double precision NOT NULL,
-    sosmed_url text,
+    sosmed_url text
 );

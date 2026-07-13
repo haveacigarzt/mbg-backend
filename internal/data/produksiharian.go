@@ -117,7 +117,7 @@ func (m ProduksiHarianModel) GetAll(tanggal string, filters Filters) ([]*Produks
 	SELECT
 		count(*) OVER(),
 		s.id AS sppg_id,
-		s.nama AS sppg_nama,
+		COALESCE(s.nama, '') AS nama,
 		ph.id,
 		ph.created_at,
 		ph.updated_at,

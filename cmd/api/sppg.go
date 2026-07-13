@@ -1,6 +1,10 @@
 package main
 
 import (
+	"context"
+	"crypto/rand"
+	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -39,16 +43,16 @@ func (app *application) createSPPGHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	sppg := &data.SPPG{
-		Nama:           input.Nama,
-		Alamat:         input.Alamat,
+		Nama:           &input.Nama,
+		Alamat:         &input.Alamat,
 		SosmedURL:      input.SosmedURL,
-		KepalaSPPG:     input.KepalaSPPG,
+		KepalaSPPG:     &input.KepalaSPPG,
 		NomorTelepon:   input.NomorTelepon,
 		Email:          input.Email,
 		Latitude:       input.Latitude,
 		Longitude:      input.Longitude,
-		Kecamatan_ID:   input.Kecamatan_ID,
-		Kelurahan_ID:   input.Kelurahan_ID,
+		Kecamatan_ID:   &input.Kecamatan_ID,
+		Kelurahan_ID:   &input.Kelurahan_ID,
 		KapasitasPorsi: input.KapasitasPorsi,
 		StatusAktif:    input.StatusAktif,
 	}
@@ -82,7 +86,7 @@ func (app *application) createSPPGHandler(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrDuplicateEmail):
-			v.AddError("email", "a user with this email address already exists")
+			v.AddError("email", "Alamat email user ini sudah digunakan oleh akun lain")
 			app.failedValidationResponse(w, r, v.Errors)
 		default:
 			app.serverErrorResponse(w, r, err)
@@ -238,11 +242,11 @@ func (app *application) updateSPPGHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	if input.Nama != nil {
-		sppg.Nama = *input.Nama
+		sppg.Nama = input.Nama
 	}
 
 	if input.Alamat != nil {
-		sppg.Alamat = *input.Alamat
+		sppg.Alamat = input.Alamat
 	}
 
 	if input.SosmedURL != nil {
@@ -250,7 +254,7 @@ func (app *application) updateSPPGHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	if input.KepalaSPPG != nil {
-		sppg.KepalaSPPG = *input.KepalaSPPG
+		sppg.KepalaSPPG = input.KepalaSPPG
 	}
 
 	if input.NomorTelepon != nil {
@@ -270,11 +274,11 @@ func (app *application) updateSPPGHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	if input.Kecamatan_ID != nil {
-		sppg.Kecamatan_ID = *input.Kecamatan_ID
+		sppg.Kecamatan_ID = input.Kecamatan_ID
 	}
 
 	if input.Kelurahan_ID != nil {
-		sppg.Kelurahan_ID = *input.Kelurahan_ID
+		sppg.Kelurahan_ID = input.Kelurahan_ID
 	}
 
 	if input.KapasitasPorsi != nil {
@@ -1214,6 +1218,376 @@ func (app *application) listProduksiHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"metadata": metadata, "produksi_harian": produksiHarian}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
+func GenerateRandomToken() (string, error) {
+	b := make([]byte, 12)
+
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.RawURLEncoding.EncodeToString(b), nil
+}
+
+func (app *application) createSPPGInvitationHandler(w http.ResponseWriter, r *http.Request) {
+	user := app.contextGetUser(r)
+	if user.RoleID != 1 {
+		app.notPermittedResponse(w, r)
+		return
+	}
+
+	var input struct {
+		NamaSPPG string `json:"nama_sppg"`
+	}
+
+	// Read the JSON request body data into the input struct.
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	token, err := GenerateRandomToken()
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	invitation := &data.SPPGInvitations{
+		Token:    token,
+		NamaSPPG: input.NamaSPPG,
+		ExpiresAt: sql.NullTime{
+			Time:  time.Now().AddDate(0, 0, 7),
+			Valid: true,
+		},
+	}
+
+	v := validator.New()
+
+	data.ValidateSPPGInvitations(v, invitation)
+
+	if !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	err = app.models.SPPGInvitations.Insert(invitation)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	// // ws: untuk publik
+	// var input2 struct {
+	// 	data.Filters
+	// }
+
+	// v2 := validator.New()
+
+	// qs := r.URL.Query()
+	// input2.Filters.Page = app.readInt(qs, "page", 1, v2)
+	// input2.Filters.PageSize = app.readInt(qs, "page_size", 0, v2)
+
+	// input2.Filters.Sort = app.readString(qs, "sort", "id")
+
+	// input2.Filters.SortSafelist = []string{
+	// 	"id",
+	// 	"-id",
+	// 	"jumlah",
+	// 	"-jumlah",
+	// }
+
+	// if data.ValidateFilters(v2, input2.Filters); !v2.Valid() {
+	// 	app.failedValidationResponse(w, r, v2.Errors)
+	// 	return
+	// }
+	// alokasiHarianAll, _, err := app.models.AlokasiHarian.GetAll(tanggal, input2.Filters)
+	// if err != nil {
+	// 	switch {
+	// 	case errors.Is(err, data.ErrRecordNotFound):
+	// 		app.notFoundResponse(w, r)
+	// 	default:
+	// 		app.serverErrorResponse(w, r, err)
+	// 	}
+	// 	return
+	// }
+
+	// pengeluaranHarianAll, _, err := app.models.PengeluaranHarian.GetAllByTanggal(tanggal, input2.Filters)
+	// if err != nil {
+	// 	app.serverErrorResponse(w, r, err)
+	// 	return
+	// }
+
+	// payload := map[string]any{
+	// 	"type": "keuangan:updated",
+	// 	"data": BuildRingkasan(alokasiHarianAll, pengeluaranHarianAll),
+	// }
+	// fmt.Println("keuangan:updated")
+	// jsonData, _ := json.Marshal(payload)
+	// app.hub.BroadcastToRoom("open", jsonData)
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"invitation": invitation}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
+func (app *application) listSPPGInvitationHandler(w http.ResponseWriter, r *http.Request) {
+	user := app.contextGetUser(r)
+	if user.RoleID != 1 {
+		app.notPermittedResponse(w, r)
+		return
+	}
+	v := validator.New()
+
+	var input struct {
+		data.Filters
+	}
+
+	qs := r.URL.Query()
+
+	input.Filters.Page = app.readInt(qs, "page", 1, v)
+	input.Filters.PageSize = app.readInt(qs, "page_size", 20, v)
+
+	input.Filters.Sort = app.readString(qs, "sort", "-created_at")
+
+	input.Filters.SortSafelist = []string{
+		"id",
+		"-id",
+		"nama_sppg",
+		"-nama_sppg",
+		"created_at",
+		"-created_at",
+		"used_at",
+		"-used_at",
+		"expires_at",
+		"-expires_at",
+	}
+
+	if data.ValidateFilters(v, input.Filters); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	invitations, metadata, err := app.models.SPPGInvitations.GetAll(input.Filters)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{
+		"invitations": invitations,
+		"metadata":    metadata,
+	}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
+func (app *application) getSPPGInvitationHandler(w http.ResponseWriter, r *http.Request) {
+	token, err := app.readStringParam(r, "token")
+	if err != nil {
+		app.notFoundResponse(w, r)
+		return
+	}
+
+	invitation, err := app.models.SPPGInvitations.GetByToken(token)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{
+		"invitation": invitation,
+	}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
+func (app *application) deleteSPPGInvitationHandler(w http.ResponseWriter, r *http.Request) {
+	token, err := app.readStringParam(r, "token")
+	if err != nil {
+		app.notFoundResponse(w, r)
+		return
+	}
+
+	err = app.models.SPPGInvitations.DeleteByToken(token)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	// Return a 200 OK status code along with a success message.
+	err = app.writeJSON(w, http.StatusOK, envelope{"message": "invitation successfully deleted"}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
+type createSPPGByInvitationInput struct {
+	Nama           string   `json:"nama"`
+	Alamat         string   `json:"alamat"`
+	KepalaSPPG     string   `json:"kepala_sppg"`
+	NomorTelepon   string   `json:"nomor_telepon"`
+	Email          string   `json:"email"`
+	KelurahanID    int64    `json:"kelurahan_id"`
+	KecamatanID    int64    `json:"kecamatan_id"`
+	KapasitasPorsi int      `json:"kapasitas_porsi"`
+	Latitude       float64  `json:"latitude"`
+	Longitude      float64  `json:"longitude"`
+	SosmedURL      []string `json:"sosmed_url"`
+
+	EmailUser string `json:"email_user"`
+	Password  string `json:"password"`
+}
+
+func (app *application) createSPPGByInvitationHandler(w http.ResponseWriter, r *http.Request) {
+	token, err := app.readStringParam(r, "token")
+	if err != nil {
+		app.notFoundResponse(w, r)
+		return
+	}
+
+	var input createSPPGByInvitationInput
+
+	err = app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	sppg := &data.SPPG{
+		Nama:           &input.Nama,
+		Alamat:         &input.Alamat,
+		KepalaSPPG:     &input.KepalaSPPG,
+		NomorTelepon:   input.NomorTelepon,
+		Email:          input.Email,
+		Kecamatan_ID:   &input.KecamatanID,
+		Kelurahan_ID:   &input.KelurahanID,
+		KapasitasPorsi: input.KapasitasPorsi,
+		Latitude:       input.Latitude,
+		Longitude:      input.Longitude,
+		SosmedURL:      input.SosmedURL,
+		StatusAktif:    false,
+	}
+
+	v := validator.New()
+
+	data.ValidateCreateSPPG(v, sppg)
+
+	if !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
+	defer cancel()
+
+	tx, err := app.models.DB.BeginTx(ctx, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+	defer tx.Rollback()
+
+	invitation, err := app.models.SPPGInvitations.GetByTokenTx(ctx, tx, token)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	v = validator.New()
+
+	data.ValidateSPPGInvitations(v, invitation)
+
+	if invitation.UsedAt.Valid {
+		v.AddError("token", "token sudah digunakan")
+	}
+
+	if !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	user := &data.User{
+		Name:      *sppg.Nama,
+		Email:     input.EmailUser,
+		Activated: false,
+		RoleID:    3,
+	}
+
+	err = user.Password.Set(input.Password)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	if data.ValidateUser(v, user); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	err = app.models.Users.InsertAndGetIDTx(ctx, tx, user)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrDuplicateEmail):
+			v.AddError("email", "Email user yang dikirimkan sudah digunakan oleh akun lain")
+			app.failedValidationResponse(w, r, v.Errors)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	sppg.UserID = user.ID
+
+	err = app.models.SPPG.InsertTx(ctx, tx, sppg)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	err = app.models.SPPGInvitations.MarkAsUsed(ctx, tx, invitation.ID)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusCreated, envelope{
+		"sppg": sppg,
+	}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

@@ -66,9 +66,27 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPost, "/v1/pengiriman/:id/tracking", app.requirePermission("tracking:write", app.createTrackingHandler))
 	// router.HandlerFunc(http.MethodPatch, "/v1/tracking/:id", app.requirePermission("tracking:write", app.updateTrackingHandler))
 
+	// Admin Routes
+	router.HandlerFunc(http.MethodGet, "/v1/admin/akun", app.requirePermission("akunsppg:write", app.getAkunHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/admin/akun/summary", app.requirePermission("akunsppg:write", app.getAkunSummaryHandler))
+	router.HandlerFunc(http.MethodPost, "/v1/admin/akun", app.requirePermission("akunsppg:write", app.createAkunHandler))
+	router.HandlerFunc(http.MethodPatch, "/v1/admin/akun", app.requirePermission("akunsppg:write", app.updateAkunHandler))
+	router.HandlerFunc(http.MethodDelete, "/v1/admin/akun", app.requirePermission("akunsppg:write", app.deleteAkunHandler))
+	router.HandlerFunc(http.MethodPost, "/v1/admin/invitation/new", app.requirePermission("akunsppg:write", app.createSPPGInvitationHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/admin/invitation", app.requirePermission("akunsppg:write", app.listSPPGInvitationHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/invitation/:token", app.getSPPGInvitationHandler)
+	router.HandlerFunc(http.MethodDelete, "/v1/invitation/:token", app.deleteSPPGInvitationHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/register/:token", app.createSPPGByInvitationHandler)
+	// router.HandlerFunc(http.MethodGet, "/v1/admin/akun", app.requirePermission("akunsppg:write", app.geAkunHandler))
+	// router.HandlerFunc(http.MethodGet, "/v1/admin/akun", app.requirePermission("akunsppg:write", app.geAkunHandler))
+	// router.HandlerFunc(http.MethodGet, "/v1/admin/akun", app.requirePermission("akunsppg:write", app.geAkunHandler))
+
 	// Keuangan routes
 	router.HandlerFunc(http.MethodGet, "/v1/keuanganharian", app.listKeuanganHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/produksiharian", app.listProduksiHandler)
+
+	// Pedagang Lokal Routes
+	router.HandlerFunc(http.MethodGet, "/v1/pedaganglokal", app.listPedagangLokalHandler)
 
 	// Auth
 	router.HandlerFunc(http.MethodPost, "/v1/users", app.registerUserHandler)

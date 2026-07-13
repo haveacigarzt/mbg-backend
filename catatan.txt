@@ -1,0 +1,35 @@
+psql --host=localhost --dbname=mbg --username=rian
+$MBG_DB_DSN postgres://rian:pas55word@localhost/mbg?sslmode=disable
+psql $MBG_DB_DSN
+
+migrate create -seq -ext=.sql -dir=./migrations nama_migration
+migrate -path=./migrations -database=$MBG_DB_DSN up
+
+SELECT * FROM users_permissions
+go run ./cmd/api -cors-trusted-origins="http://localhost:9002 http://localhost:9001"
+
+./bin/api -port=4040 -db-dsn=postgres://rian:pas55word@localhost/mbg?sslmode=disable -cors-trusted-origins="http://localhost:5173 http://localhost:9001 http://192.168.1.14:3000 http://192.168.1.14:5173 http://192.168.1.14 http://192.168.1.2:5173 http://192.168.1.2"
+
+npx expo prebuild --clean
+npx expo run:android
+
+
+// admin
+// {"email": "afriandy193@gmail.com", "password": "pas55word"}
+
+// sppg2 id 4
+// {"email": "admin_ponbar@sppg.id", "password": "password"}
+// {
+//   "email": "Ggb",
+//   "password": "Jkk"
+// }
+// sppg1 id 5
+// {"email": "admin_pontim@sppg.id", "password": "password123"}
+
+// driver sppg1 id 5
+{"email": "driver.ilirkota@gmail.com", "password": "rahasia123"}
+// driver sppg1 id 4
+// {"email": "driver.bunut2@gmail.com", "password": "password123"}
+
+// Stakeholder
+// {"name": "Dinas Sanggau", "email": "dinassgu@gmail.com", "password": "password"}
