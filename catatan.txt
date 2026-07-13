@@ -1,6 +1,13 @@
-psql --host=localhost --dbname=mbg --username=rian
-$MBG_DB_DSN postgres://rian:pas55word@localhost/mbg?sslmode=disable
-psql $MBG_DB_DSN
+psql -U postgres
+postgres=# CREATE ROLE rian WITH LOGIN PASSWORD 'pas55word';
+postgres=# CREATE DATABASE mbg OWNER rian;
+postgres=# \c mbg
+mbg=# CREATE EXTENSION IF NOT EXISTS citext;
+
+.envrc
+export MBG_DB_DSN='postgres://rian:pas55word@localhost/mbg?sslmode=disable'
+
+install migrate
 
 migrate create -seq -ext=.sql -dir=./migrations nama_migration
 migrate -path=./migrations -database=$MBG_DB_DSN up
@@ -13,23 +20,3 @@ go run ./cmd/api -cors-trusted-origins="http://localhost:9002 http://localhost:9
 npx expo prebuild --clean
 npx expo run:android
 
-
-// admin
-// {"email": "afriandy193@gmail.com", "password": "pas55word"}
-
-// sppg2 id 4
-// {"email": "admin_ponbar@sppg.id", "password": "password"}
-// {
-//   "email": "Ggb",
-//   "password": "Jkk"
-// }
-// sppg1 id 5
-// {"email": "admin_pontim@sppg.id", "password": "password123"}
-
-// driver sppg1 id 5
-{"email": "driver.ilirkota@gmail.com", "password": "rahasia123"}
-// driver sppg1 id 4
-// {"email": "driver.bunut2@gmail.com", "password": "password123"}
-
-// Stakeholder
-// {"name": "Dinas Sanggau", "email": "dinassgu@gmail.com", "password": "password"}

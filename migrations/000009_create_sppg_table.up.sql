@@ -16,11 +16,19 @@ CREATE TABLE IF NOT EXISTS sppg (
     latitude double precision,
     longitude double precision,
 
-    kecamatan text NOT NULL,
-    kelurahan text NOT NULL,
+    kecamatan_id BIGINT NOT NULL,
+    kelurahan_id BIGINT NOT NULL,
 
     kapasitas_porsi integer NOT NULL DEFAULT 0,
     status_aktif boolean NOT NULL DEFAULT true,
 
-    version integer NOT NULL DEFAULT 1
+    version integer NOT NULL DEFAULT 1,
+
+    CONSTRAINT fk_sppg_kecamatan
+        FOREIGN KEY (kecamatan_id)
+        REFERENCES kecamatan(id),
+
+    CONSTRAINT fk_sppg_kelurahan
+        FOREIGN KEY (kelurahan_id)
+        REFERENCES kelurahan(id)
 );

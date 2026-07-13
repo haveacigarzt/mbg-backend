@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS pengiriman (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     sppg_id BIGINT NOT NULL,
-    driver_id BIGINT NOT NULL,
+    driver_id BIGINT NULL,
 
     tujuan_type TEXT NOT NULL,
     tujuan_id BIGINT NOT NULL,

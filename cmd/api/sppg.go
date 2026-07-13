@@ -582,8 +582,6 @@ func (app *application) listSPPGPengeluaranHarianHandler(w http.ResponseWriter, 
 		"-id",
 		"produk",
 		"-produk",
-		"jumlah",
-		"-jumlah",
 		"satuan",
 		"-satuan",
 		"harga_satuan",
@@ -660,11 +658,13 @@ func (app *application) createSPPGPengeluaranHarianHandler(w http.ResponseWriter
 	}
 
 	var input struct {
-		AlokasiHarianID int64  `json:"alokasi_harian_id"`
-		Produk          string `json:"produk"`
-		Jumlah          int64  `json:"jumlah"`
-		Satuan          string `json:"satuan"`
-		HargaSatuan     int64  `json:"harga_satuan"`
+		AlokasiHarianID      int64   `json:"alokasi_harian_id"`
+		Produk               string  `json:"produk"`
+		Jumlah               int64   `json:"jumlah"`
+		Satuan               string  `json:"satuan"`
+		HargaSatuan          int64   `json:"harga_satuan"`
+		PedagangLokalID      *int64  `json:"pedagang_lokal_id"`
+		NamaPedagangNonLokal *string `json:"nama_pedagang_non_lokal"`
 	}
 
 	// Read the JSON request body data into the input struct.
@@ -676,11 +676,13 @@ func (app *application) createSPPGPengeluaranHarianHandler(w http.ResponseWriter
 
 	// create
 	pengeluaranHarian := &data.PengeluaranHarian{
-		AlokasiHarianID: input.AlokasiHarianID,
-		Produk:          input.Produk,
-		Jumlah:          input.Jumlah,
-		Satuan:          input.Satuan,
-		HargaSatuan:     input.HargaSatuan,
+		AlokasiHarianID:      input.AlokasiHarianID,
+		Produk:               input.Produk,
+		Jumlah:               input.Jumlah,
+		Satuan:               input.Satuan,
+		HargaSatuan:          input.HargaSatuan,
+		PedagangLokalID:      input.PedagangLokalID,
+		NamaPedagangNonLokal: input.NamaPedagangNonLokal,
 	}
 
 	v := validator.New()
@@ -691,11 +693,11 @@ func (app *application) createSPPGPengeluaranHarianHandler(w http.ResponseWriter
 	}
 
 	tanggal, err := app.models.PengeluaranHarian.Insert(pengeluaranHarian)
-	fmt.Println("tanggal", tanggal)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
+	fmt.Println("tanggal", tanggal)
 
 	// ws: untuk publik
 	var input2 struct {

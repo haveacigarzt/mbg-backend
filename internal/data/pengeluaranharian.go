@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"mbg/internal/validator"
+	"strings"
 	"time"
 )
 
@@ -20,6 +21,10 @@ type PengeluaranHarian struct {
 	Satuan      string `json:"satuan"`
 	HargaSatuan int64  `json:"harga_satuan"`
 	Subtotal    int64  `json:"subtotal"`
+
+	PedagangLokalID      *int64  `json:"pedagang_lokal_id"`
+	NamaPedagangLokal    *string `json:"nama_pedagang_lokal"`
+	NamaPedagangNonLokal *string `json:"nama_pedagang_non_lokal"`
 }
 
 func ValidatePengeluaranHarian(v *validator.Validator, pengeluaran *PengeluaranHarian) {
@@ -34,6 +39,30 @@ func ValidatePengeluaranHarian(v *validator.Validator, pengeluaran *PengeluaranH
 	v.Check(len(pengeluaran.Satuan) <= 50, "satuan", "must not be more than 50 bytes long")
 
 	v.Check(pengeluaran.HargaSatuan > 0, "harga_satuan", "must be greater than 0")
+
+	hasPedagangLokal := pengeluaran.PedagangLokalID != nil
+	hasPedagangNonLokal := pengeluaran.NamaPedagangNonLokal != nil &&
+		strings.TrimSpace(*pengeluaran.NamaPedagangNonLokal) != ""
+
+	v.Check(
+		hasPedagangLokal || hasPedagangNonLokal,
+		"pedagang",
+		"either pedagang_lokal_id or nama_pedagang_non_lokal must be provided",
+	)
+
+	v.Check(
+		!(hasPedagangLokal && hasPedagangNonLokal),
+		"pedagang",
+		"only one of pedagang_lokal_id or nama_pedagang_non_lokal can be provided",
+	)
+
+	if hasPedagangNonLokal {
+		v.Check(
+			len(*pengeluaran.NamaPedagangNonLokal) <= 255,
+			"nama_pedagang_non_lokal",
+			"must not be more than 255 bytes long",
+		)
+	}
 }
 
 type PengeluaranHarianModel struct {
@@ -47,9 +76,11 @@ func (m PengeluaranHarianModel) Insert(pengeluaran *PengeluaranHarian) (string, 
 			produk,
 			jumlah,
 			satuan,
-			harga_satuan
+			harga_satuan,
+			pedagang_lokal_id,
+			nama_pedagang_non_lokal
 		)
-		VALUES ($1, $2, $3, $4, $5)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING
 			id,
 			created_at,
@@ -75,6 +106,8 @@ func (m PengeluaranHarianModel) Insert(pengeluaran *PengeluaranHarian) (string, 
 		pengeluaran.Jumlah,
 		pengeluaran.Satuan,
 		pengeluaran.HargaSatuan,
+		pengeluaran.PedagangLokalID,
+		pengeluaran.NamaPedagangNonLokal,
 	).Scan(
 		&pengeluaran.ID,
 		&pengeluaran.CreatedAt,
@@ -122,20 +155,25 @@ func (m PengeluaranHarianModel) Delete(id int64) (string, error) {
 }
 
 func (m PengeluaranHarianModel) GetAll(alokasiHarianID int64, filters Filters) ([]*PengeluaranHarian, Metadata, error) {
-
 	query := fmt.Sprintf(`
-	SELECT count(*) OVER(),
-		id,
-		alokasi_harian_id,
-		produk,
-		jumlah,
-		satuan,
-		harga_satuan,
-		subtotal,
-		created_at
-	FROM pengeluaran_harian
-	WHERE alokasi_harian_id = $1
-	ORDER BY %s %s, id ASC
+	SELECT
+		count(*) OVER(),
+		ph.id,
+		ph.alokasi_harian_id,
+		ph.produk,
+		ph.jumlah,
+		ph.satuan,
+		ph.harga_satuan,
+		ph.subtotal,
+		ph.pedagang_lokal_id,
+		pl.nama,
+		ph.nama_pedagang_non_lokal,
+		ph.created_at
+	FROM pengeluaran_harian ph
+	LEFT JOIN pedagang_lokal pl
+		ON pl.id = ph.pedagang_lokal_id
+	WHERE ph.alokasi_harian_id = $1
+	ORDER BY %s %s, ph.id ASC
 	LIMIT $2 OFFSET $3`,
 		filters.sortColumn(),
 		filters.sortDirection(),
@@ -169,6 +207,9 @@ func (m PengeluaranHarianModel) GetAll(alokasiHarianID int64, filters Filters) (
 			&pengeluaran.Satuan,
 			&pengeluaran.HargaSatuan,
 			&pengeluaran.Subtotal,
+			&pengeluaran.PedagangLokalID,
+			&pengeluaran.NamaPedagangLokal,
+			&pengeluaran.NamaPedagangNonLokal,
 			&pengeluaran.CreatedAt,
 		)
 		if err != nil {
