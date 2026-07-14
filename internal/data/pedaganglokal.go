@@ -16,6 +16,7 @@ type PedagangLokal struct {
 	Latitude    float64   `json:"latitude"`
 	JenisProduk string    `json:"jenis_produk"`
 	SPPGID      int64     `json:"sppg_id"`
+	SPPGNama    *string   `json:"sppg_nama,omitempty"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 	Version     int32     `json:"version"`
@@ -44,6 +45,7 @@ func (m PedagangLokalModel) GetAll(
 		p.latitude,
 		p.jenis_produk,
 		p.sppg_id,
+		s.nama,
 		p.updated_at,
 		p.version
 	FROM pedagang_lokal p
@@ -92,6 +94,7 @@ func (m PedagangLokalModel) GetAll(
 			&p.Latitude,
 			&p.JenisProduk,
 			&p.SPPGID,
+			&p.SPPGNama,
 			&p.UpdatedAt,
 			&p.Version,
 		)
