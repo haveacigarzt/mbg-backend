@@ -22,9 +22,11 @@ type PengeluaranHarian struct {
 	HargaSatuan int64  `json:"harga_satuan"`
 	Subtotal    int64  `json:"subtotal"`
 
-	PedagangLokalID      *int64  `json:"pedagang_lokal_id"`
-	NamaPedagangLokal    *string `json:"nama_pedagang_lokal"`
-	NamaPedagangNonLokal *string `json:"nama_pedagang_non_lokal"`
+	PedagangLokalID        *int64   `json:"pedagang_lokal_id"`
+	NamaPedagangLokal      *string  `json:"nama_pedagang_lokal"`
+	LongitudePedagangLokal *float64 `json:"longitude_pedagang_lokal,omitempty"`
+	LatitudePedagangLokal  *float64 `json:"latitude_pedagang_lokal,omitempty"`
+	NamaPedagangNonLokal   *string  `json:"nama_pedagang_non_lokal"`
 }
 
 func ValidatePengeluaranHarian(v *validator.Validator, pengeluaran *PengeluaranHarian) {
@@ -69,7 +71,7 @@ type PengeluaranHarianModel struct {
 	DB *sql.DB
 }
 
-func (m PengeluaranHarianModel) Insert(pengeluaran *PengeluaranHarian) (string, error) {
+func (m PengeluaranHarianModel) Insert(pengeluaran *PengeluaranHarian) (int64, string, error) {
 	query := `
 		INSERT INTO pengeluaran_harian (
 			alokasi_harian_id,
@@ -117,10 +119,10 @@ func (m PengeluaranHarianModel) Insert(pengeluaran *PengeluaranHarian) (string, 
 	)
 
 	if err != nil {
-		return "", err
+		return 0, "", err
 	}
 
-	return tanggal, nil
+	return pengeluaran.ID, tanggal, nil
 }
 
 func (m PengeluaranHarianModel) Delete(id int64) (string, error) {
@@ -308,4 +310,55 @@ func (m PengeluaranHarianModel) GetAllByTanggal(tanggal string, filters Filters)
 	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
 
 	return pengeluaranHarian, metadata, nil
+}
+
+func (m PengeluaranHarianModel) GetLocalWithStoreCoord(pengeluaranID int64) (*PengeluaranHarian, error) {
+	query := `
+	SELECT
+		ph.id,
+		ph.alokasi_harian_id,
+		ph.produk,
+		ph.jumlah,
+		ph.satuan,
+		ph.harga_satuan,
+		ph.subtotal,
+		ph.pedagang_lokal_id,
+		pl.nama,
+		pl.longitude,
+		pl.latitude,
+		ph.nama_pedagang_non_lokal,
+		ph.created_at
+	FROM pengeluaran_harian ph
+	LEFT JOIN pedagang_lokal pl
+		ON pl.id = ph.pedagang_lokal_id
+	WHERE ph.id = $1`
+
+	var pengeluaran PengeluaranHarian
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	err := m.DB.QueryRowContext(ctx, query, pengeluaranID).Scan(
+		&pengeluaran.ID,
+		&pengeluaran.AlokasiHarianID,
+		&pengeluaran.Produk,
+		&pengeluaran.Jumlah,
+		&pengeluaran.Satuan,
+		&pengeluaran.HargaSatuan,
+		&pengeluaran.Subtotal,
+		&pengeluaran.PedagangLokalID,
+		&pengeluaran.NamaPedagangLokal,
+		&pengeluaran.LongitudePedagangLokal,
+		&pengeluaran.LatitudePedagangLokal,
+		&pengeluaran.NamaPedagangNonLokal,
+		&pengeluaran.CreatedAt,
+	)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &pengeluaran, nil
 }

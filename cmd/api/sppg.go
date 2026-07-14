@@ -692,12 +692,11 @@ func (app *application) createSPPGPengeluaranHarianHandler(w http.ResponseWriter
 		return
 	}
 
-	tanggal, err := app.models.PengeluaranHarian.Insert(pengeluaranHarian)
+	pengeluaranID, tanggal, err := app.models.PengeluaranHarian.Insert(pengeluaranHarian)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
-	fmt.Println("tanggal", tanggal)
 
 	// ws: untuk publik
 	var input2 struct {
@@ -744,9 +743,28 @@ func (app *application) createSPPGPengeluaranHarianHandler(w http.ResponseWriter
 		"type": "keuangan:updated",
 		"data": BuildRingkasan(alokasiHarianAll, pengeluaranHarianAll),
 	}
-	fmt.Println("keuangan:updated")
 	jsonData, _ := json.Marshal(payload)
 	app.hub.BroadcastToRoom("open", jsonData)
+
+	if pengeluaranHarian.PedagangLokalID != nil {
+		fmt.Println("pengeluaran_lokal:created")
+		pengeluaran, err := app.models.PengeluaranHarian.GetLocalWithStoreCoord(pengeluaranID)
+		if err != nil {
+			switch {
+			case errors.Is(err, data.ErrRecordNotFound):
+				app.notFoundResponse(w, r)
+			default:
+				app.serverErrorResponse(w, r, err)
+			}
+			return
+		}
+		payload := map[string]any{
+			"type": "pengeluaran_lokal:created",
+			"data": pengeluaran,
+		}
+		jsonData, _ := json.Marshal(payload)
+		app.hub.BroadcastToRoom("open", jsonData)
+	}
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"pengeluaran_harian": pengeluaranHarian}, nil)
 	if err != nil {
