@@ -1612,3 +1612,48 @@ func (app *application) createSPPGByInvitationHandler(w http.ResponseWriter, r *
 		app.serverErrorResponse(w, r, err)
 	}
 }
+
+func (app *application) getSPPGKelengkapanDataHandler(w http.ResponseWriter, r *http.Request) {
+
+	user := app.contextGetUser(r)
+	if user.RoleID != 3 {
+		app.notPermittedResponse(w, r)
+		return
+	}
+
+	sppg, err := app.models.SPPG.GetByUserID(user.ID)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	var input struct {
+		Tanggal string
+	}
+	qs := r.URL.Query()
+
+	input.Tanggal = app.readString(qs, "tanggal", "")
+
+	kelengkapan, err := app.models.SPPG.GetKelengkapan(sppg.ID, input.Tanggal)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{
+		"kelengkapan_data": kelengkapan,
+	}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}

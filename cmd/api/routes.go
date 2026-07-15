@@ -30,6 +30,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodDelete, "/v1/sppg/:id/pengeluaranharian/:pengeluaran_id", app.requirePermission("sppg:write", app.deleteSPPGPengeluaranHarianHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/sppg/:id/produksiharian", app.requirePermission("sppg:write", app.getSPPGProduksiHarianHandler))
 	router.HandlerFunc(http.MethodPost, "/v1/sppg/:id/produksiharian", app.requirePermission("sppg:write", app.createSPPGProduksiHarianHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/sppg2/kelengkapandata", app.requirePermission("sppg:write", app.getSPPGKelengkapanDataHandler))
 
 	// Sekolah routes
 	router.HandlerFunc(http.MethodGet, "/v1/sekolah", app.listSekolahHandler)

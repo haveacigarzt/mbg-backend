@@ -472,6 +472,73 @@ func (m SPPGModel) Get(id int64) (*SPPG, error) {
 	return &sppg, nil
 }
 
+type KelengkapanData struct {
+	PenerimaManfaat   bool `json:"penerima_manfaat"`
+	AlokasiHariIni    bool `json:"alokasi_hari_ini"`
+	PengirimanHariIni bool `json:"pengiriman_hari_ini"`
+	ProduksiHariIni   bool `json:"produksi_hari_ini"`
+}
+
+func (m SPPGModel) GetKelengkapan(id int64, tanggal string) (*KelengkapanData, error) {
+	if id < 1 {
+		return nil, ErrRecordNotFound
+	}
+
+	query := `
+		SELECT
+			(
+				EXISTS (
+					SELECT 1
+					FROM sekolah
+					WHERE sppg_id = $1
+				)
+				OR
+				EXISTS (
+					SELECT 1
+					FROM posyandu
+					WHERE sppg_id = $1
+				)
+			) AS penerima_manfaat,
+
+			EXISTS (
+				SELECT 1
+				FROM alokasi_harian
+				WHERE sppg_id = $1
+				AND tanggal = $2
+			) AS alokasi_hari_ini,
+
+			EXISTS (
+				SELECT 1
+				FROM pengiriman
+				WHERE sppg_id = $1
+				AND created_at::date = $2::date
+			) AS pengiriman_hari_ini,
+
+			EXISTS (
+				SELECT 1
+				FROM produksi_harian
+				WHERE sppg_id = $1
+				AND tanggal = $2
+			) AS produksi_hari_ini;
+	`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var data KelengkapanData
+
+	err := m.DB.QueryRowContext(ctx, query, id, tanggal).Scan(
+		&data.PenerimaManfaat,
+		&data.AlokasiHariIni,
+		&data.PengirimanHariIni,
+		&data.ProduksiHariIni,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
+}
 func (m SPPGModel) GetByUserID(user_id int64) (*SPPG, error) {
 	if user_id < 1 {
 		return nil, ErrRecordNotFound
