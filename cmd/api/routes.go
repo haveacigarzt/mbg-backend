@@ -87,6 +87,9 @@ func (app *application) routes() http.Handler {
 
 	// Pedagang Lokal Routes
 	router.HandlerFunc(http.MethodGet, "/v1/pedaganglokal", app.listPedagangLokalHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/pedaganglokal", app.requirePermission("sekolah:write", app.createPedagangLokalHandler))
+	router.HandlerFunc(http.MethodPatch, "/v1/pedaganglokal/:id", app.requirePermission("sekolah:write", app.updatePedagangLokalHandler))
+	router.HandlerFunc(http.MethodDelete, "/v1/pedaganglokal/:id", app.requirePermission("sekolah:write", app.deletePedagangLokalHandler))
 
 	// Auth
 	router.HandlerFunc(http.MethodPost, "/v1/users", app.registerUserHandler)
