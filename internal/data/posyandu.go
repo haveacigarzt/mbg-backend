@@ -25,6 +25,7 @@ type Posyandu struct {
 	JumlahIbuHamil int       `json:"jumlah_ibu_hamil"`
 	SPPGID         int64     `json:"sppg_id"`
 	Version        int32     `json:"version"`
+	UserID         *int64    `json:"user_id"`
 }
 
 func ValidatePosyandu(v *validator.Validator, posyandu *Posyandu) {
@@ -71,7 +72,7 @@ type PosyanduModel struct {
 	DB *sql.DB
 }
 
-func (m PosyanduModel) Insert(posyandu *Posyandu) error {
+func (m PosyanduModel) InsertTx(ctx context.Context, tx *sql.Tx, posyandu *Posyandu) error {
 	query := `
 INSERT INTO posyandu (
     nama,
@@ -82,9 +83,10 @@ INSERT INTO posyandu (
     longitude,
     jumlah_balita,
     jumlah_ibu_hamil,
-    sppg_id
+    sppg_id,
+		user_id
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING id, created_at, version`
 
 	args := []any{
@@ -97,12 +99,10 @@ RETURNING id, created_at, version`
 		posyandu.JumlahBalita,
 		posyandu.JumlahIbuHamil,
 		posyandu.SPPGID,
+		posyandu.UserID,
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-
-	return m.DB.QueryRowContext(ctx, query, args...).Scan(
+	return tx.QueryRowContext(ctx, query, args...).Scan(
 		&posyandu.ID,
 		&posyandu.CreatedAt,
 		&posyandu.Version,
@@ -126,6 +126,7 @@ func (m PosyanduModel) GetAll(nama string, kecamatan_id int64, kelurahan_id int6
 		s.latitude,
 		s.longitude,
 		s.sppg_id,
+		s.user_id,
 		s.version
 	FROM posyandu s
 	LEFT JOIN kecamatan k ON k.id = s.kecamatan_id
@@ -176,6 +177,7 @@ func (m PosyanduModel) GetAll(nama string, kecamatan_id int64, kelurahan_id int6
 			&posyandu.Latitude,
 			&posyandu.Longitude,
 			&posyandu.SPPGID,
+			&posyandu.UserID,
 			&posyandu.Version,
 		)
 		if err != nil {
@@ -214,6 +216,7 @@ func (m PosyanduModel) Get(id int64) (*Posyandu, error) {
 			s.latitude,
 			s.longitude,
 			s.sppg_id,
+			s.user_id,
 			s.version
 		FROM posyandu s
 		LEFT JOIN kecamatan k ON k.id = s.kecamatan_id
@@ -244,6 +247,74 @@ func (m PosyanduModel) Get(id int64) (*Posyandu, error) {
 		&posyandu.Latitude,
 		&posyandu.Longitude,
 		&posyandu.SPPGID,
+		&posyandu.UserID,
+		&posyandu.Version,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &posyandu, nil
+}
+
+func (m PosyanduModel) GetByUserID(user_id int64) (*Posyandu, error) {
+	if user_id < 1 {
+		return nil, ErrRecordNotFound
+	}
+
+	query := `
+		SELECT
+			p.id,
+			p.created_at,
+			p.nama,
+			p.alamat,
+			p.jumlah_balita,
+			p.jumlah_ibu_hamil,
+			p.kecamatan_id,
+			k.name AS kecamatan,
+			p.kelurahan_id,
+			kel.name AS kelurahan,
+			p.latitude,
+			p.longitude,
+			p.sppg_id,
+			p.user_id,
+			p.version
+		FROM posyandu p
+		LEFT JOIN kecamatan k ON k.id = p.kecamatan_id
+		LEFT JOIN kelurahan kel ON kel.id = p.kelurahan_id
+		WHERE p.user_id = $1
+	`
+
+	var posyandu Posyandu
+
+	// Use the context.WithTimeout() function to create a context.Context which carries a
+	// 3-second timeout deadline. Note that we're using the empty context.Background()
+	// as the 'parent' context.
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+
+	defer cancel()
+
+	err := m.DB.QueryRowContext(ctx, query, user_id).Scan(
+		&posyandu.ID,
+		&posyandu.CreatedAt,
+		&posyandu.Nama,
+		&posyandu.Alamat,
+		&posyandu.JumlahBalita,
+		&posyandu.JumlahIbuHamil,
+		&posyandu.Kecamatan_ID,
+		&posyandu.Kecamatan,
+		&posyandu.Kelurahan_ID,
+		&posyandu.Kelurahan,
+		&posyandu.Latitude,
+		&posyandu.Longitude,
+		&posyandu.SPPGID,
+		&posyandu.UserID,
 		&posyandu.Version,
 	)
 

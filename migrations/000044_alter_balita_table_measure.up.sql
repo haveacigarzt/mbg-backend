@@ -1,0 +1,7 @@
+ALTER TABLE balita
+ALTER COLUMN berat_lahir TYPE INTEGER
+USING berat_lahir::INTEGER;
+
+ALTER TABLE balita
+ALTER COLUMN panjang_lahir TYPE INTEGER
+USING panjang_lahir::INTEGER;

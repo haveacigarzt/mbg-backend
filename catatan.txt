@@ -17,6 +17,70 @@ go run ./cmd/api -cors-trusted-origins="http://localhost:9002 http://localhost:9
 
 ./bin/api -port=4040 -db-dsn=postgres://rian:pas55word@localhost/mbg?sslmode=disable -cors-trusted-origins="http://localhost:5173 http://localhost:9001 http://192.168.1.14:3000 http://192.168.1.14:5173 http://192.168.1.14 http://192.168.1.2:5173 http://192.168.1.2"
 
+const quickLogins = [
+  {
+    label: 'Admin',
+    email: 'afriandy193@gmail.com',
+    password: 'pas55word',
+    color: 'bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100'
+  },
+  {
+    label: 'Stakeholder',
+    email: 'dinassgu@gmail.com',
+    password: 'password',
+    color: 'bg-purple-50 text-purple-600 border-purple-200 hover:bg-purple-100'
+  },
+  {
+    label: 'SPPG A',
+    email: 'admin_pontim@sppg.id',
+    password: 'password123',
+    color: 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100'
+  },
+  {
+    label: 'SPPG B',
+    email: 'admin_ponbar@sppg.id',
+    password: 'password',
+    color: 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100'
+  },
+  {
+    label: 'Driver A',
+    email: 'driver.ilirkota@gmail.com',
+    password: 'rahasia123',
+    color: 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100'
+  },
+  {
+    label: 'Driver B',
+    email: 'driver.bunut2@gmail.com',
+    password: 'password123',
+    color: 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100'
+  }
+];
+
+role id:
+1: admin
+2: stakeholder
+3: sppg
+4: driver
+5: sekolah
+6: posyandu
+
 npx expo prebuild --clean
 npx expo run:android
 
+untuk frontend (daftar(list) data pengukuran):
+
+GET /v1/sekolah/${sekolah_id}/pesertadidik/pengukuran
+search: "nama"
+sort: "id", "-id", "nama", "-nama", "tinggi_badan", "-tinggi_badan", "berat_badan", "-berat_badan", "umur_bulan", "-umur_bulan", "kelas", "-kelas", "rombel", "-rombel"
+
+GET /v1/posyandu/${posyandu_id}/balita/pengukuran
+search: "nama" // contoh nama="jane", "bulan" // format: "YYYY-MM-DD" contoh: bulan="2026-08-01"
+sort: "id", "-id", "nama", "-nama", "ibu_nama", "-ibu_nama", "tinggi_badan", "-tinggi_badan", "berat_badan", "-berat_badan", "umur_bulan", "-umur_bulan", "lingkar_kepala", "-lingkar_kepala", "lila", "-lila"
+
+GET /v1/posyandu/${posyandu_id}/bumil/pengukuran
+search: "nama" // contoh nama="jane", "bulan" // format: "YYYY-MM-DD" contoh: bulan="2026-08-01"
+sort: "id", "-id", "nama", "-nama", "berat_badan", "-berat_badan", "tinggi_badan", "-tinggi_badan", "hemoglobin", "-hemoglobin", "lila", "-lila", "usia_kehamilan_minggu", "-usia_kehamilan_minggu", "tekanan_darah_sistolik", "-tekanan_darah_sistolik", "tekanan_darah_diastolik", "-tekanan_darah_diastolik"
+
+GET /v1/posyandu/${posyandu_id}/busui/pengukuran
+search: "nama" // contoh nama="jane", "bulan" // format: "YYYY-MM-DD" contoh: bulan="2026-08-01"
+sort: "id", "-id", "nama", "-nama", "berat_badan", "-berat_badan", "tinggi_badan", "-tinggi_badan", "hemoglobin", "-hemoglobin", "lila", "-lila"

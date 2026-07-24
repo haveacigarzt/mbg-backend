@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS ats;
+DROP TABLE IF EXISTS aps;
+DROP TYPE IF EXISTS pendidikan_terakhir;

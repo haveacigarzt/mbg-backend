@@ -1,0 +1,17 @@
+ALTER TABLE balita
+DROP CONSTRAINT IF EXISTS fk_balita_posyandu;
+
+ALTER TABLE balita
+DROP COLUMN IF EXISTS posyandu_id;
+
+ALTER TABLE bumil
+DROP CONSTRAINT IF EXISTS fk_bumil_posyandu;
+
+ALTER TABLE bumil
+DROP COLUMN IF EXISTS posyandu_id;
+
+ALTER TABLE busui
+DROP CONSTRAINT IF EXISTS fk_busui_posyandu;
+
+ALTER TABLE busui
+DROP COLUMN IF EXISTS posyandu_id;

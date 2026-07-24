@@ -24,6 +24,8 @@ type Sekolah struct {
 	Longitude    float64   `json:"longitude"`
 	Version      int32     `json:"version"`
 	SPPGID       int64     `json:"sppg_id"`
+	UserID       *int64    `json:"user_id"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 func ValidateSekolah(v *validator.Validator, sekolah *Sekolah) {
@@ -69,7 +71,7 @@ type SekolahModel struct {
 }
 
 // Add a placeholder method for inserting a new record in the sekolah table.
-func (m SekolahModel) Insert(sekolah *Sekolah) error {
+func (m SekolahModel) InsertTx(ctx context.Context, tx *sql.Tx, sekolah *Sekolah) error {
 	// Define the SQL query for inserting a new record in the movies table and returning
 	// the system-generated data.
 	query := `
@@ -82,9 +84,10 @@ INSERT INTO sekolah (
     kelurahan_id,
     latitude,
     longitude,
-		sppg_id
+		sppg_id,
+		user_id
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING id, created_at, version`
 
 	args := []any{
@@ -97,12 +100,10 @@ RETURNING id, created_at, version`
 		sekolah.Latitude,
 		sekolah.Longitude,
 		sekolah.SPPGID,
+		sekolah.UserID,
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-
-	return m.DB.QueryRowContext(ctx, query, args...).Scan(
+	return tx.QueryRowContext(ctx, query, args...).Scan(
 		&sekolah.ID,
 		&sekolah.CreatedAt,
 		&sekolah.Version,
@@ -267,6 +268,7 @@ func (m SekolahModel) GetAll(nama string, tingkat string, kecamatan_id int64, ke
 		s.latitude,
 		s.longitude,
 		s.sppg_id,
+		s.user_id,
 		s.version
 	FROM sekolah s
 	LEFT JOIN kecamatan k ON k.id = s.kecamatan_id
@@ -317,6 +319,7 @@ func (m SekolahModel) GetAll(nama string, tingkat string, kecamatan_id int64, ke
 			&sekolah.Latitude,
 			&sekolah.Longitude,
 			&sekolah.SPPGID,
+			&sekolah.UserID,
 			&sekolah.Version,
 		)
 		if err != nil {
@@ -333,4 +336,71 @@ func (m SekolahModel) GetAll(nama string, tingkat string, kecamatan_id int64, ke
 	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
 
 	return sekolah_all, metadata, nil
+}
+
+func (m SekolahModel) GetByUserID(user_id int64) (*Sekolah, error) {
+	if user_id < 1 {
+		return nil, ErrRecordNotFound
+	}
+
+	query := `
+		SELECT
+			s.id,
+			s.created_at,
+			s.nama,
+			s.alamat,
+			s.tingkat,
+			s.jumlah_siswa,
+			s.kecamatan_id,
+			k.name AS kecamatan,
+			s.kelurahan_id,
+			kel.name AS kelurahan,
+			s.latitude,
+			s.longitude,
+			s.sppg_id,
+			s.version,
+			s.user_id
+		FROM sekolah s
+		LEFT JOIN kecamatan k ON k.id = s.kecamatan_id
+		LEFT JOIN kelurahan kel ON kel.id = s.kelurahan_id
+		WHERE s.user_id = $1
+	`
+
+	var sekolah Sekolah
+
+	// Use the context.WithTimeout() function to create a context.Context which carries a
+	// 3-second timeout deadline. Note that we're using the empty context.Background()
+	// as the 'parent' context.
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+
+	defer cancel()
+
+	err := m.DB.QueryRowContext(ctx, query, user_id).Scan(
+		&sekolah.ID,
+		&sekolah.CreatedAt,
+		&sekolah.Nama,
+		&sekolah.Alamat,
+		&sekolah.Tingkat,
+		&sekolah.JumlahSiswa,
+		&sekolah.Kecamatan_ID,
+		&sekolah.Kecamatan,
+		&sekolah.Kelurahan_ID,
+		&sekolah.Kelurahan,
+		&sekolah.Latitude,
+		&sekolah.Longitude,
+		&sekolah.SPPGID,
+		&sekolah.Version,
+		&sekolah.UserID,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &sekolah, nil
 }

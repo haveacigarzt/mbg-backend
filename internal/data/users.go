@@ -17,6 +17,8 @@ import (
 
 var (
 	ErrDuplicateEmail = errors.New("duplicate email")
+	ErrDuplicateNIK   = errors.New("duplicate nik")
+	ErrDuplicateNISN  = errors.New("duplicate nisn")
 )
 
 type UserModel struct {
@@ -210,7 +212,7 @@ func (m UserModel) InsertTx(ctx context.Context, tx *sql.Tx, user *User) error {
 
 	if err != nil {
 		switch {
-		case err.Error() == `pq: duplicate key value violates unique constraint "users_email_key"`:
+		case strings.Contains(err.Error(), `users_email_key`):
 			return ErrDuplicateEmail
 		default:
 			return err

@@ -1,0 +1,26 @@
+ALTER TABLE balita
+ADD COLUMN IF NOT EXISTS posyandu_id BIGINT;
+
+ALTER TABLE balita
+ADD CONSTRAINT fk_balita_posyandu
+FOREIGN KEY (posyandu_id)
+REFERENCES posyandu(id)
+ON DELETE RESTRICT;
+
+ALTER TABLE bumil
+ADD COLUMN IF NOT EXISTS posyandu_id BIGINT;
+
+ALTER TABLE bumil
+ADD CONSTRAINT fk_bumil_posyandu
+FOREIGN KEY (posyandu_id)
+REFERENCES posyandu(id)
+ON DELETE RESTRICT;
+
+ALTER TABLE busui
+ADD COLUMN IF NOT EXISTS posyandu_id BIGINT;
+
+ALTER TABLE busui
+ADD CONSTRAINT fk_busui_posyandu
+FOREIGN KEY (posyandu_id)
+REFERENCES posyandu(id)
+ON DELETE RESTRICT;

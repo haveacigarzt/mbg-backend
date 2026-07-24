@@ -1,0 +1,20 @@
+ALTER TABLE posyandu
+DROP CONSTRAINT IF EXISTS fk_posyandu_user;
+
+ALTER TABLE posyandu
+DROP CONSTRAINT IF EXISTS uq_posyandu_user;
+
+ALTER TABLE posyandu
+DROP COLUMN IF EXISTS user_id;
+
+ALTER TABLE sekolah
+DROP CONSTRAINT IF EXISTS fk_sekolah_user;
+
+ALTER TABLE sekolah
+DROP CONSTRAINT IF EXISTS uq_sekolah_user;
+
+ALTER TABLE sekolah
+DROP COLUMN IF EXISTS user_id;
+
+ALTER TABLE sekolah
+DROP COLUMN IF EXISTS updated_at;

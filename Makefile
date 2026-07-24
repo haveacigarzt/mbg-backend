@@ -37,6 +37,16 @@ db/migrations/up: confirm
 db/migrations/force: confirm
 	@echo 'Running up migrations...'
 	migrate -path ./migrations -database ${MBG_DB_DSN} force ${version}
+## db/migrations/version for checking migration version
+.PHONY: db/migrations/version
+db/migrations/version:
+	@echo 'Checking migrations version...'
+	migrate -path ./migrations -database ${MBG_DB_DSN} version
+## db/migrations/goto version=35
+.PHONY: db/migrations/goto
+db/migrations/goto: confirm
+	@echo 'Migrating to version ${version}...'
+	migrate -path ./migrations -database ${MBG_DB_DSN} goto ${version}
 # ==================================================================================== #
 # QUALITY CONTROL
 # ==================================================================================== #

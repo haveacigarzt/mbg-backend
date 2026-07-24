@@ -38,6 +38,11 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/sekolah/:id", app.requirePermission("sekolah:read", app.getSekolahHandler))
 	router.HandlerFunc(http.MethodPatch, "/v1/sekolah/:id", app.requirePermission("sekolah:write", app.updateSekolahHandler))
 	router.HandlerFunc(http.MethodDelete, "/v1/sekolah/:id", app.requirePermission("sekolah:write", app.deleteSekolahHandler))
+	// Peserta didik routes
+	router.HandlerFunc(http.MethodPost, "/v1/sekolah/:id/pesertadidik", app.requirePermission("peserta_didik:write", app.createPesertaDidikHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/sekolah/:id/pesertadidik", app.listPesertaDidikHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/sekolah/:id/pesertadidik/pengukuran", app.requirePermission("pengukuran_anak:write", app.createPengukuranPesertaDidikHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/sekolah/:id/pesertadidik/pengukuran", app.requirePermission("pengukuran_anak:read", app.listPengukuranPesertaDidikHandler))
 
 	// Posyandu routes
 	router.HandlerFunc(http.MethodGet, "/v1/posyandu", app.listPosyanduHandler)
@@ -45,6 +50,27 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/posyandu/:id", app.requirePermission("posyandu:read", app.getPosyanduHandler))
 	router.HandlerFunc(http.MethodPatch, "/v1/posyandu/:id", app.requirePermission("posyandu:write", app.updatePosyanduHandler))
 	router.HandlerFunc(http.MethodDelete, "/v1/posyandu/:id", app.requirePermission("posyandu:write", app.deletePosyanduHandler))
+
+	// Balita routes
+	router.HandlerFunc(http.MethodPost, "/v1/posyandu/:id/balita", app.requirePermission("balita:write", app.createBalitaHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/posyandu/:id/balita", app.listBalitaHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/posyandu/:id/balita/pengukuran", app.requirePermission("pengukuran_balita:write", app.createPengukuranBalitaHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/posyandu/:id/balita/pengukuran", app.requirePermission("pengukuran_balita:read", app.listPengukuranBalitaHandler))
+
+	// Busui routes
+	router.HandlerFunc(http.MethodPost, "/v1/posyandu/:id/busui", app.requirePermission("busui:write", app.createBusuiHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/posyandu/:id/busui", app.listBusuiHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/posyandu/:id/busui/pengukuran", app.requirePermission("pengukuran_busui:write", app.createPengukuranBusuiHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/posyandu/:id/busui/pengukuran", app.requirePermission("pengukuran_busui:read", app.listPengukuranBusuiHandler))
+
+	// Bumil routes
+	router.HandlerFunc(http.MethodPost, "/v1/posyandu/:id/bumil", app.requirePermission("bumil:write", app.createBumilHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/posyandu/:id/bumil", app.listBumilHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/posyandu/:id/bumil/pengukuran", app.requirePermission("pengukuran_bumil:write", app.createPengukuranBumilHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/posyandu/:id/bumil/pengukuran", app.requirePermission("pengukuran_bumil:read", app.listPengukuranBumilHandler))
+
+	// Ibu routes
+	router.HandlerFunc(http.MethodGet, "/v1/posyandu/:id/ibu", app.listIbuHandler)
 
 	// Driver routes
 	router.HandlerFunc(http.MethodGet, "/v1/drivers", app.requirePermission("driver:read", app.listDriverHandler))

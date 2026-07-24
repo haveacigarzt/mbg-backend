@@ -185,6 +185,22 @@ func (app *application) authUserHandler(w http.ResponseWriter, r *http.Request) 
 		}
 		idInRole = driver.ID
 	}
+	if user.RoleID == 5 {
+		posyandu, err := app.models.Posyandu.GetByUserID(user.ID)
+		if err != nil {
+			app.serverErrorResponse(w, r, err)
+			return
+		}
+		idInRole = posyandu.ID
+	}
+	if user.RoleID == 6 {
+		sekolah, err := app.models.Sekolah.GetByUserID(user.ID)
+		if err != nil {
+			app.serverErrorResponse(w, r, err)
+			return
+		}
+		idInRole = sekolah.ID
+	}
 
 	response := AuthUserResponse{
 		ID:        user.ID,

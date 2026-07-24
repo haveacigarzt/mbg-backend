@@ -28,6 +28,15 @@ type Models struct {
 	ProduksiHarian    ProduksiHarianModel
 	SPPGInvitations   SPPGInvitationsModel
 	PedagangLokal     PedagangLokalModel
+	PesertaDidik      PesertaDidikModel
+	Penduduk          PendudukModel
+	Balita            BalitaModel
+	Busui             BusuiModel
+	Bumil             BumilModel
+	PengukuranAnak    PengukuranAnakModel
+	PengukuranBalita  PengukuranBalitaModel
+	PengukuranBusui   PengukuranBusuiModel
+	PengukuranBumil   PengukuranBumilModel
 }
 
 func NewModels(db *sql.DB) Models {
@@ -49,5 +58,14 @@ func NewModels(db *sql.DB) Models {
 		ProduksiHarian:    ProduksiHarianModel{DB: db},
 		SPPGInvitations:   SPPGInvitationsModel{DB: db},
 		PedagangLokal:     PedagangLokalModel{DB: db},
+		PesertaDidik:      PesertaDidikModel{DB: db},
+		Penduduk:          PendudukModel{DB: db},
+		Balita:            BalitaModel{DB: db},
+		Busui:             BusuiModel{DB: db},
+		Bumil:             BumilModel{DB: db},
+		PengukuranAnak:    PengukuranAnakModel{DB: db},
+		PengukuranBalita:  PengukuranBalitaModel{DB: db},
+		PengukuranBusui:   PengukuranBusuiModel{DB: db},
+		PengukuranBumil:   PengukuranBumilModel{DB: db},
 	}
 }
