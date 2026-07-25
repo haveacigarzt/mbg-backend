@@ -1,0 +1,2 @@
+ALTER TABLE posyandu
+ADD COLUMN IF NOT EXISTS jumlah_ibu_menyusui INTEGER NOT NULL DEFAULT 0;

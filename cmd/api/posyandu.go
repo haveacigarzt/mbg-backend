@@ -29,15 +29,13 @@ func (app *application) createPosyanduHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	var input struct {
-		Nama           string  `json:"nama"`
-		Alamat         string  `json:"alamat"`
-		Kecamatan_ID   int64   `json:"kecamatan_id"`
-		Kelurahan_ID   int64   `json:"kelurahan_id"`
-		Latitude       float64 `json:"latitude"`
-		Longitude      float64 `json:"longitude"`
-		JumlahBalita   int     `json:"jumlah_balita"`
-		JumlahIbuHamil int     `json:"jumlah_ibu_hamil"`
-		User           struct {
+		Nama         string  `json:"nama"`
+		Alamat       string  `json:"alamat"`
+		Kecamatan_ID int64   `json:"kecamatan_id"`
+		Kelurahan_ID int64   `json:"kelurahan_id"`
+		Latitude     float64 `json:"latitude"`
+		Longitude    float64 `json:"longitude"`
+		User         struct {
 			Name     string `json:"name"`
 			Email    string `json:"email"`
 			Password string `json:"password"`
@@ -52,15 +50,13 @@ func (app *application) createPosyanduHandler(w http.ResponseWriter, r *http.Req
 
 	// Copy the values from the input struct to a new Movie struct.
 	posyandu := &data.Posyandu{
-		Nama:           input.Nama,
-		Alamat:         input.Alamat,
-		Kecamatan_ID:   input.Kecamatan_ID,
-		Kelurahan_ID:   input.Kelurahan_ID,
-		JumlahBalita:   input.JumlahBalita,
-		JumlahIbuHamil: input.JumlahIbuHamil,
-		Latitude:       input.Latitude,
-		Longitude:      input.Longitude,
-		SPPGID:         sppg.ID,
+		Nama:         input.Nama,
+		Alamat:       input.Alamat,
+		Kecamatan_ID: input.Kecamatan_ID,
+		Kelurahan_ID: input.Kelurahan_ID,
+		Latitude:     input.Latitude,
+		Longitude:    input.Longitude,
+		SPPGID:       sppg.ID,
 	}
 
 	// Initialize a new Validator instance.
@@ -206,14 +202,12 @@ func (app *application) updatePosyanduHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	var input struct {
-		Nama           *string  `json:"nama"`
-		Alamat         *string  `json:"alamat"`
-		Kecamatan_ID   *int64   `json:"kecamatan_id"`
-		Kelurahan_ID   *int64   `json:"kelurahan_id"`
-		Latitude       *float64 `json:"latitude"`
-		Longitude      *float64 `json:"longitude"`
-		JumlahBalita   *int     `json:"jumlah_balita"`
-		JumlahIbuHamil *int     `json:"jumlah_ibu_hamil"`
+		Nama         *string  `json:"nama"`
+		Alamat       *string  `json:"alamat"`
+		Kecamatan_ID *int64   `json:"kecamatan_id"`
+		Kelurahan_ID *int64   `json:"kelurahan_id"`
+		Latitude     *float64 `json:"latitude"`
+		Longitude    *float64 `json:"longitude"`
 	}
 	// Read the JSON request body data into the input struct.
 	err = app.readJSON(w, r, &input)
@@ -244,14 +238,6 @@ func (app *application) updatePosyanduHandler(w http.ResponseWriter, r *http.Req
 
 	if input.Longitude != nil {
 		posyandu.Longitude = *input.Longitude
-	}
-
-	if input.JumlahBalita != nil {
-		posyandu.JumlahBalita = *input.JumlahBalita
-	}
-
-	if input.JumlahIbuHamil != nil {
-		posyandu.JumlahIbuHamil = *input.JumlahIbuHamil
 	}
 
 	// Validate the updated movie record, sending the client a 422 Unprocessable Entity

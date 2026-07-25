@@ -37,6 +37,7 @@ type Models struct {
 	PengukuranBalita  PengukuranBalitaModel
 	PengukuranBusui   PengukuranBusuiModel
 	PengukuranBumil   PengukuranBumilModel
+	Summary           SummaryModel
 }
 
 func NewModels(db *sql.DB) Models {
@@ -67,5 +68,6 @@ func NewModels(db *sql.DB) Models {
 		PengukuranBalita:  PengukuranBalitaModel{DB: db},
 		PengukuranBusui:   PengukuranBusuiModel{DB: db},
 		PengukuranBumil:   PengukuranBumilModel{DB: db},
+		Summary:           SummaryModel{DB: db},
 	}
 }

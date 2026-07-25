@@ -18,6 +18,10 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/kecamatan", app.kecamatanHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/kelurahan/:id", app.kelurahanHandler)
 
+	// Summary routes
+	router.HandlerFunc(http.MethodGet, "/v1/summary/penerimamanfaat", app.sumPenerimaManfaatHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/summary/dapur", app.sumDapurHandler)
+
 	// SPPG routes
 	router.HandlerFunc(http.MethodGet, "/v1/sppg", app.listSPPGHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/sppg", app.requirePermission("akunsppg:write", app.createSPPGHandler))

@@ -12,24 +12,27 @@ import (
 )
 
 type SPPG struct {
-	ID             int64     `json:"id,omitempty"`
-	CreatedAt      time.Time `json:"created_at,omitempty"`
-	UserID         int64     `json:"user_id,omitempty"`
-	Nama           *string   `json:"nama,omitempty"`
-	Alamat         *string   `json:"alamat,omitempty"`
-	SosmedURL      []string  `json:"sosmed_url,omitempty"`
-	KepalaSPPG     *string   `json:"kepala_sppg,omitempty"`
-	NomorTelepon   string    `json:"nomor_telepon,omitempty"`
-	Email          string    `json:"email,omitempty"`
-	Latitude       float64   `json:"latitude,omitempty"`
-	Longitude      float64   `json:"longitude,omitempty"`
-	Kecamatan      string    `json:"kecamatan,omitempty"`
-	Kelurahan      string    `json:"kelurahan,omitempty"`
-	Kecamatan_ID   *int64    `json:"kecamatan_id,omitempty"`
-	Kelurahan_ID   *int64    `json:"kelurahan_id,omitempty"`
-	KapasitasPorsi int       `json:"kapasitas_porsi,omitempty"`
-	StatusAktif    bool      `json:"status_aktif,omitempty"`
-	Version        int32     `json:"version,omitempty"`
+	ID                    int64     `json:"id,omitempty"`
+	CreatedAt             time.Time `json:"created_at,omitempty"`
+	UserID                int64     `json:"user_id,omitempty"`
+	Nama                  *string   `json:"nama,omitempty"`
+	Alamat                *string   `json:"alamat,omitempty"`
+	SosmedURL             []string  `json:"sosmed_url,omitempty"`
+	KepalaSPPG            *string   `json:"kepala_sppg,omitempty"`
+	NomorTelepon          string    `json:"nomor_telepon,omitempty"`
+	Email                 string    `json:"email,omitempty"`
+	Latitude              float64   `json:"latitude,omitempty"`
+	Longitude             float64   `json:"longitude,omitempty"`
+	Kecamatan             string    `json:"kecamatan,omitempty"`
+	Kelurahan             string    `json:"kelurahan,omitempty"`
+	Kecamatan_ID          *int64    `json:"kecamatan_id,omitempty"`
+	Kelurahan_ID          *int64    `json:"kelurahan_id,omitempty"`
+	JumlahSekolah         uint8     `json:"jumlah_sekolah"`
+	JumlahPosyandu        uint8     `json:"jumlah_posyandu"`
+	JumlahPenerimaManfaat uint16    `json:"jumlah_penerima_manfaat"`
+	KapasitasPorsi        int       `json:"kapasitas_porsi,omitempty"`
+	StatusAktif           bool      `json:"status_aktif,omitempty"`
+	Version               int32     `json:"version,omitempty"`
 }
 
 func ValidateSPPG(v *validator.Validator, sppg *SPPG) {
@@ -320,6 +323,16 @@ func (m SPPGModel) GetAll(nama string, kecamatan_id int64, kelurahan_id int64, s
 		s.nomor_telepon,
 		s.email,
 		s.kapasitas_porsi,
+		(
+			SELECT COUNT(*)
+			FROM sekolah sk
+			WHERE sk.sppg_id = s.id
+		) AS jumlah_sekolah,
+		(
+			SELECT COUNT(*)
+			FROM posyandu ps
+			WHERE ps.sppg_id = s.id
+		) AS jumlah_posyandu,
 		s.kecamatan_id,
 		COALESCE(k.name, '') AS kecamatan,
 		s.kelurahan_id,

@@ -66,21 +66,3 @@ role id:
 
 npx expo prebuild --clean
 npx expo run:android
-
-untuk frontend (daftar(list) data pengukuran):
-
-GET /v1/sekolah/${sekolah_id}/pesertadidik/pengukuran
-search: "nama"
-sort: "id", "-id", "nama", "-nama", "tinggi_badan", "-tinggi_badan", "berat_badan", "-berat_badan", "umur_bulan", "-umur_bulan", "kelas", "-kelas", "rombel", "-rombel"
-
-GET /v1/posyandu/${posyandu_id}/balita/pengukuran
-search: "nama" // contoh nama="jane", "bulan" // format: "YYYY-MM-DD" contoh: bulan="2026-08-01"
-sort: "id", "-id", "nama", "-nama", "ibu_nama", "-ibu_nama", "tinggi_badan", "-tinggi_badan", "berat_badan", "-berat_badan", "umur_bulan", "-umur_bulan", "lingkar_kepala", "-lingkar_kepala", "lila", "-lila"
-
-GET /v1/posyandu/${posyandu_id}/bumil/pengukuran
-search: "nama" // contoh nama="jane", "bulan" // format: "YYYY-MM-DD" contoh: bulan="2026-08-01"
-sort: "id", "-id", "nama", "-nama", "berat_badan", "-berat_badan", "tinggi_badan", "-tinggi_badan", "hemoglobin", "-hemoglobin", "lila", "-lila", "usia_kehamilan_minggu", "-usia_kehamilan_minggu", "tekanan_darah_sistolik", "-tekanan_darah_sistolik", "tekanan_darah_diastolik", "-tekanan_darah_diastolik"
-
-GET /v1/posyandu/${posyandu_id}/busui/pengukuran
-search: "nama" // contoh nama="jane", "bulan" // format: "YYYY-MM-DD" contoh: bulan="2026-08-01"
-sort: "id", "-id", "nama", "-nama", "berat_badan", "-berat_badan", "tinggi_badan", "-tinggi_badan", "hemoglobin", "-hemoglobin", "lila", "-lila"

@@ -10,22 +10,23 @@ import (
 )
 
 type Posyandu struct {
-	ID             int64     `json:"id"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
-	Nama           string    `json:"nama"`
-	Alamat         string    `json:"alamat"`
-	Kecamatan      string    `json:"kecamatan,omitempty"`
-	Kelurahan      string    `json:"kelurahan,omitempty"`
-	Kecamatan_ID   int64     `json:"kecamatan_id"`
-	Kelurahan_ID   int64     `json:"kelurahan_id"`
-	Latitude       float64   `json:"latitude"`
-	Longitude      float64   `json:"longitude"`
-	JumlahBalita   int       `json:"jumlah_balita"`
-	JumlahIbuHamil int       `json:"jumlah_ibu_hamil"`
-	SPPGID         int64     `json:"sppg_id"`
-	Version        int32     `json:"version"`
-	UserID         *int64    `json:"user_id"`
+	ID                int64     `json:"id"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at"`
+	Nama              string    `json:"nama"`
+	Alamat            string    `json:"alamat"`
+	Kecamatan         string    `json:"kecamatan,omitempty"`
+	Kelurahan         string    `json:"kelurahan,omitempty"`
+	Kecamatan_ID      int64     `json:"kecamatan_id"`
+	Kelurahan_ID      int64     `json:"kelurahan_id"`
+	Latitude          float64   `json:"latitude"`
+	Longitude         float64   `json:"longitude"`
+	JumlahBalita      uint16    `json:"jumlah_balita"`
+	JumlahIbuHamil    uint16    `json:"jumlah_ibu_hamil"`
+	JumlahIbuMenyusui uint16    `json:"jumlah_ibu_menyusui"`
+	SPPGID            int64     `json:"sppg_id"`
+	Version           int32     `json:"version"`
+	UserID            *int64    `json:"user_id"`
 }
 
 func ValidatePosyandu(v *validator.Validator, posyandu *Posyandu) {
@@ -39,15 +40,15 @@ func ValidatePosyandu(v *validator.Validator, posyandu *Posyandu) {
 
 	v.Check(posyandu.Kelurahan_ID != 0, "kelurahan_id", "must be provided")
 
-	v.Check(posyandu.JumlahBalita >= 0,
-		"jumlah_balita",
-		"must be greater than or equal to 0",
-	)
+	// v.Check(posyandu.JumlahBalita >= 0,
+	// 	"jumlah_balita",
+	// 	"must be greater than or equal to 0",
+	// )
 
-	v.Check(posyandu.JumlahIbuHamil >= 0,
-		"jumlah_ibu_hamil",
-		"must be greater than or equal to 0",
-	)
+	// v.Check(posyandu.JumlahIbuHamil >= 0,
+	// 	"jumlah_ibu_hamil",
+	// 	"must be greater than or equal to 0",
+	// )
 
 	v.Check(
 		posyandu.Latitude >= -90 && posyandu.Latitude <= 90,
@@ -74,20 +75,18 @@ type PosyanduModel struct {
 
 func (m PosyanduModel) InsertTx(ctx context.Context, tx *sql.Tx, posyandu *Posyandu) error {
 	query := `
-INSERT INTO posyandu (
-    nama,
-    alamat,
-    kecamatan_id,
-    kelurahan_id,
-    latitude,
-    longitude,
-    jumlah_balita,
-    jumlah_ibu_hamil,
-    sppg_id,
-		user_id
-)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-RETURNING id, created_at, version`
+	INSERT INTO posyandu (
+			nama,
+			alamat,
+			kecamatan_id,
+			kelurahan_id,
+			latitude,
+			longitude,
+			sppg_id,
+			user_id
+	)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+	RETURNING id, created_at, version`
 
 	args := []any{
 		posyandu.Nama,
@@ -96,8 +95,6 @@ RETURNING id, created_at, version`
 		posyandu.Kelurahan_ID,
 		posyandu.Latitude,
 		posyandu.Longitude,
-		posyandu.JumlahBalita,
-		posyandu.JumlahIbuHamil,
 		posyandu.SPPGID,
 		posyandu.UserID,
 	}
@@ -113,32 +110,43 @@ func (m PosyanduModel) GetAll(nama string, kecamatan_id int64, kelurahan_id int6
 
 	query := fmt.Sprintf(`
 	SELECT count(*) OVER(),
-		s.id,
-		s.created_at,
-		s.nama,
-		s.alamat,
-		s.jumlah_balita,
-		s.jumlah_ibu_hamil,
-		s.kecamatan_id,
+		p.id,
+		p.created_at,
+		p.nama,
+		p.alamat,
+		p.kecamatan_id,
 		k.name AS kecamatan,
-		s.kelurahan_id,
+		p.kelurahan_id,
 		kel.name AS kelurahan,
-		s.latitude,
-		s.longitude,
-		s.sppg_id,
-		s.user_id,
-		s.version
-	FROM posyandu s
-	LEFT JOIN kecamatan k ON k.id = s.kecamatan_id
-	LEFT JOIN kelurahan kel ON kel.id = s.kelurahan_id
-	WHERE (LOWER(s.nama) LIKE LOWER('%%' || $1 || '%%') OR $1 = '')
-	AND (s.kecamatan_id = $2 OR $2 = 0)
-	AND (s.kelurahan_id = $3 OR $3 = 0)
-	AND (s.sppg_id = $4 OR $4 = 0)
-	AND (s.jumlah_balita >= $5 OR $5 = 0)
-	AND (s.jumlah_ibu_hamil >= $6 OR $6 = 0)
+		p.latitude,
+		p.longitude,
+		p.sppg_id,
+		p.user_id,
+		(
+			SELECT COUNT(*)
+			FROM balita b
+			WHERE b.posyandu_id = p.id
+		) AS jumlah_balita,
+		(
+			SELECT COUNT(*)
+			FROM bumil bm
+			WHERE bm.posyandu_id = p.id
+		) AS jumlah_ibu_hamil,
+		(
+			SELECT COUNT(*)
+			FROM busui bs
+			WHERE bs.posyandu_id = p.id
+		) AS jumlah_ibu_menyusui,
+		p.version
+	FROM posyandu p
+	LEFT JOIN kecamatan k ON k.id = p.kecamatan_id
+	LEFT JOIN kelurahan kel ON kel.id = p.kelurahan_id
+	WHERE (LOWER(p.nama) LIKE LOWER('%%' || $1 || '%%') OR $1 = '')
+	AND (p.kecamatan_id = $2 OR $2 = 0)
+	AND (p.kelurahan_id = $3 OR $3 = 0)
+	AND (p.sppg_id = $4 OR $4 = 0)
 	ORDER BY %s %s, id ASC
-	LIMIT $7 OFFSET $8`,
+	LIMIT $5 OFFSET $6`,
 		filters.sortColumn(),
 		filters.sortDirection(),
 	)
@@ -146,7 +154,7 @@ func (m PosyanduModel) GetAll(nama string, kecamatan_id int64, kelurahan_id int6
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	args := []any{nama, kecamatan_id, kelurahan_id, sppg_id, jumlahBalita, jumlahIbuHamil, filters.limit(), filters.offset()}
+	args := []any{nama, kecamatan_id, kelurahan_id, sppg_id, filters.limit(), filters.offset()}
 
 	rows, err := m.DB.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -168,8 +176,6 @@ func (m PosyanduModel) GetAll(nama string, kecamatan_id int64, kelurahan_id int6
 			&posyandu.CreatedAt,
 			&posyandu.Nama,
 			&posyandu.Alamat,
-			&posyandu.JumlahBalita,
-			&posyandu.JumlahIbuHamil,
 			&posyandu.Kecamatan_ID,
 			&posyandu.Kecamatan,
 			&posyandu.Kelurahan_ID,
@@ -178,6 +184,9 @@ func (m PosyanduModel) GetAll(nama string, kecamatan_id int64, kelurahan_id int6
 			&posyandu.Longitude,
 			&posyandu.SPPGID,
 			&posyandu.UserID,
+			&posyandu.JumlahBalita,
+			&posyandu.JumlahIbuHamil,
+			&posyandu.JumlahIbuMenyusui,
 			&posyandu.Version,
 		)
 		if err != nil {
@@ -203,25 +212,38 @@ func (m PosyanduModel) Get(id int64) (*Posyandu, error) {
 
 	query := `
 		SELECT
-			s.id,
-			s.created_at,
-			s.nama,
-			s.alamat,
-			s.jumlah_balita,
-			s.jumlah_ibu_hamil,
-			s.kecamatan_id,
+			p.id,
+			p.created_at,
+			p.nama,
+			p.alamat,
+			(
+				SELECT COUNT(*)
+				FROM balita b
+				WHERE b.posyandu_id = p.id
+			) AS jumlah_balita,
+			(
+				SELECT COUNT(*)
+				FROM bumil bm
+				WHERE bm.posyandu_id = p.id
+			) AS jumlah_ibu_hamil,
+			(
+				SELECT COUNT(*)
+				FROM busui bs
+				WHERE bs.posyandu_id = p.id
+			) AS jumlah_ibu_menyusui,
+			p.kecamatan_id,
 			k.name AS kecamatan,
-			s.kelurahan_id,
+			p.kelurahan_id,
 			kel.name AS kelurahan,
-			s.latitude,
-			s.longitude,
-			s.sppg_id,
-			s.user_id,
-			s.version
-		FROM posyandu s
-		LEFT JOIN kecamatan k ON k.id = s.kecamatan_id
-		LEFT JOIN kelurahan kel ON kel.id = s.kelurahan_id
-		WHERE s.id = $1
+			p.latitude,
+			p.longitude,
+			p.sppg_id,
+			p.user_id,
+			p.version
+		FROM posyandu p
+		LEFT JOIN kecamatan k ON k.id = p.kecamatan_id
+		LEFT JOIN kelurahan kel ON kel.id = p.kelurahan_id
+		WHERE p.id = $1
 	`
 
 	var posyandu Posyandu
@@ -240,6 +262,7 @@ func (m PosyanduModel) Get(id int64) (*Posyandu, error) {
 		&posyandu.Alamat,
 		&posyandu.JumlahBalita,
 		&posyandu.JumlahIbuHamil,
+		&posyandu.JumlahIbuMenyusui,
 		&posyandu.Kecamatan_ID,
 		&posyandu.Kecamatan,
 		&posyandu.Kelurahan_ID,
@@ -274,8 +297,21 @@ func (m PosyanduModel) GetByUserID(user_id int64) (*Posyandu, error) {
 			p.created_at,
 			p.nama,
 			p.alamat,
-			p.jumlah_balita,
-			p.jumlah_ibu_hamil,
+			(
+				SELECT COUNT(*)
+				FROM balita b
+				WHERE b.posyandu_id = p.id
+			) AS jumlah_balita,
+			(
+				SELECT COUNT(*)
+				FROM bumil bm
+				WHERE bm.posyandu_id = p.id
+			) AS jumlah_ibu_hamil,
+			(
+				SELECT COUNT(*)
+				FROM busui bs
+				WHERE bs.posyandu_id = p.id
+			) AS jumlah_ibu_menyusui,
 			p.kecamatan_id,
 			k.name AS kecamatan,
 			p.kelurahan_id,
@@ -307,6 +343,7 @@ func (m PosyanduModel) GetByUserID(user_id int64) (*Posyandu, error) {
 		&posyandu.Alamat,
 		&posyandu.JumlahBalita,
 		&posyandu.JumlahIbuHamil,
+		&posyandu.JumlahIbuMenyusui,
 		&posyandu.Kecamatan_ID,
 		&posyandu.Kecamatan,
 		&posyandu.Kelurahan_ID,
@@ -340,10 +377,8 @@ SET
 	kelurahan_id = $4,
 	latitude = $5,
 	longitude = $6,
-	jumlah_balita = $7,
-	jumlah_ibu_hamil = $8,
 	version = version + 1
-WHERE id = $9 AND version = $10
+WHERE id = $7 AND version = $8
 RETURNING version`
 
 	args := []any{
@@ -353,8 +388,6 @@ RETURNING version`
 		posyandu.Kelurahan_ID,
 		posyandu.Latitude,
 		posyandu.Longitude,
-		posyandu.JumlahBalita,
-		posyandu.JumlahIbuHamil,
 		posyandu.ID,
 		posyandu.Version,
 	}
