@@ -14,7 +14,7 @@ type Sekolah struct {
 	CreatedAt    time.Time `json:"-"`
 	Nama         string    `json:"nama"`
 	Alamat       string    `json:"alamat"`
-	Tingkat      string    `json:"tingkat"`
+	Kategori     string    `json:"kategori"`
 	JumlahSiswa  int       `json:"jumlah_siswa"`
 	Kecamatan    string    `json:"kecamatan,omitempty"`
 	Kelurahan    string    `json:"kelurahan,omitempty"`
@@ -35,11 +35,18 @@ func ValidateSekolah(v *validator.Validator, sekolah *Sekolah) {
 	v.Check(sekolah.Alamat != "", "alamat", "must be provided")
 	v.Check(len(sekolah.Alamat) <= 500, "alamat", "must not be more than 500 bytes long")
 
-	v.Check(sekolah.Tingkat != "", "tingkat", "must be provided")
+	v.Check(sekolah.Kategori != "", "kategori", "must be provided")
 	v.Check(
-		validator.PermittedValue(sekolah.Tingkat, "SD", "SMP", "SMA"),
-		"tingkat",
-		"must be one of SD, SMP, or SMA",
+		validator.PermittedValue(
+			sekolah.Kategori,
+			"PAUD/TK",
+			"SD/MI",
+			"SMP/MTs",
+			"SMA/SMK/MA",
+			"YAYASAN",
+		),
+		"kategori",
+		"must be one of PAUD/TK, SD/MI, SMP/MTs, SMA/SMK/MA, or YAYASAN",
 	)
 
 	v.Check(sekolah.JumlahSiswa != 0, "jumlah_siswa", "must be provided")
@@ -78,7 +85,7 @@ func (m SekolahModel) InsertTx(ctx context.Context, tx *sql.Tx, sekolah *Sekolah
 INSERT INTO sekolah (
     nama,
     alamat,
-    tingkat,
+    kategori,
     jumlah_siswa,
     kecamatan_id,
     kelurahan_id,
@@ -93,7 +100,7 @@ RETURNING id, created_at, version`
 	args := []any{
 		sekolah.Nama,
 		sekolah.Alamat,
-		sekolah.Tingkat,
+		sekolah.Kategori,
 		sekolah.JumlahSiswa,
 		sekolah.Kecamatan_ID,
 		sekolah.Kelurahan_ID,
@@ -122,7 +129,7 @@ func (m SekolahModel) Get(id int64) (*Sekolah, error) {
 			s.created_at,
 			s.nama,
 			s.alamat,
-			s.tingkat,
+			s.kategori,
 			s.jumlah_siswa,
 			s.kecamatan_id,
 			k.name AS kecamatan,
@@ -152,7 +159,7 @@ func (m SekolahModel) Get(id int64) (*Sekolah, error) {
 		&sekolah.CreatedAt,
 		&sekolah.Nama,
 		&sekolah.Alamat,
-		&sekolah.Tingkat,
+		&sekolah.Kategori,
 		&sekolah.JumlahSiswa,
 		&sekolah.Kecamatan_ID,
 		&sekolah.Kecamatan,
@@ -196,7 +203,7 @@ RETURNING version`
 	args := []any{
 		sekolah.Nama,
 		sekolah.Alamat,
-		sekolah.Tingkat,
+		sekolah.Kategori,
 		sekolah.JumlahSiswa,
 		sekolah.Kecamatan_ID,
 		sekolah.Kelurahan_ID,
@@ -259,7 +266,7 @@ func (m SekolahModel) GetAll(nama string, tingkat string, kecamatan_id int64, ke
 		s.created_at,
 		s.nama,
 		s.alamat,
-		s.tingkat,
+		s.kategori,
 		s.jumlah_siswa,
 		s.kecamatan_id,
 		k.name AS kecamatan,
@@ -274,11 +281,12 @@ func (m SekolahModel) GetAll(nama string, tingkat string, kecamatan_id int64, ke
 	LEFT JOIN kecamatan k ON k.id = s.kecamatan_id
 	LEFT JOIN kelurahan kel ON kel.id = s.kelurahan_id
 	WHERE (LOWER(s.nama) LIKE LOWER('%%' || $1 || '%%') OR $1 = '')
-	AND (LOWER(s.tingkat) = LOWER($2) OR $2 = '')
+	AND (LOWER(s.kategori) = LOWER($2) OR $2 = '')
 	AND (s.kecamatan_id = $3 OR $3 = 0)
 	AND (s.kelurahan_id = $4 OR $4 = 0)
 	AND (s.sppg_id = $5 OR $5 = 0)
 	AND (s.jumlah_siswa = $6 OR $6 = 0)
+	AND s.deleted_at IS NULL
 	ORDER BY %s %s, id ASC
 	LIMIT $7 OFFSET $8`,
 		filters.sortColumn(),
@@ -310,7 +318,7 @@ func (m SekolahModel) GetAll(nama string, tingkat string, kecamatan_id int64, ke
 			&sekolah.CreatedAt,
 			&sekolah.Nama,
 			&sekolah.Alamat,
-			&sekolah.Tingkat,
+			&sekolah.Kategori,
 			&sekolah.JumlahSiswa,
 			&sekolah.Kecamatan_ID,
 			&sekolah.Kecamatan,
@@ -349,7 +357,7 @@ func (m SekolahModel) GetByUserID(user_id int64) (*Sekolah, error) {
 			s.created_at,
 			s.nama,
 			s.alamat,
-			s.tingkat,
+			s.kategori,
 			s.jumlah_siswa,
 			s.kecamatan_id,
 			k.name AS kecamatan,
@@ -380,7 +388,7 @@ func (m SekolahModel) GetByUserID(user_id int64) (*Sekolah, error) {
 		&sekolah.CreatedAt,
 		&sekolah.Nama,
 		&sekolah.Alamat,
-		&sekolah.Tingkat,
+		&sekolah.Kategori,
 		&sekolah.JumlahSiswa,
 		&sekolah.Kecamatan_ID,
 		&sekolah.Kecamatan,

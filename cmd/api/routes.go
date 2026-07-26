@@ -21,6 +21,7 @@ func (app *application) routes() http.Handler {
 	// Summary routes
 	router.HandlerFunc(http.MethodGet, "/v1/summary/penerimamanfaat", app.sumPenerimaManfaatHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/summary/dapur", app.sumDapurHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/summary/lapanganpekerjaan", app.sumLapanganPekerjaanHandler)
 
 	// SPPG routes
 	router.HandlerFunc(http.MethodGet, "/v1/sppg", app.listSPPGHandler)
@@ -34,6 +35,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodDelete, "/v1/sppg/:id/pengeluaranharian/:pengeluaran_id", app.requirePermission("sppg:write", app.deleteSPPGPengeluaranHarianHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/sppg/:id/produksiharian", app.requirePermission("sppg:write", app.getSPPGProduksiHarianHandler))
 	router.HandlerFunc(http.MethodPost, "/v1/sppg/:id/produksiharian", app.requirePermission("sppg:write", app.createSPPGProduksiHarianHandler))
+	router.HandlerFunc(http.MethodPost, "/v1/sppg/:id/divisi", app.requirePermission("sppg:write", app.createSPPGDivisiHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/sppg2/kelengkapandata", app.requirePermission("sppg:write", app.getSPPGKelengkapanDataHandler))
 
 	// Sekolah routes

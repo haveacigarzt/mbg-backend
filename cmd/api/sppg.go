@@ -1073,6 +1073,81 @@ func (app *application) getSPPGProduksiHarianHandler(w http.ResponseWriter, r *h
 	}
 }
 
+func (app *application) createSPPGDivisiHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil || id < 1 {
+		app.notFoundResponse(w, r)
+		return
+	}
+
+	user := app.contextGetUser(r)
+	if user.RoleID != 3 {
+		app.notPermittedResponse(w, r)
+		return
+	}
+
+	sppg, err := app.models.SPPG.Get(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	// cocokan sppg.user_id dengan current user id, jika tidak maka error tidak diizinkan
+	if sppg.UserID != user.ID {
+		app.notPermittedResponse(w, r)
+		return
+	}
+
+	var input struct {
+		DivisiID  int64 `json:"divisi_id"`
+		JumlahSDM int64 `json:"jumlah_sdm"`
+	}
+
+	// Read the JSON request body data into the input struct.
+	err = app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	v := validator.New()
+
+	sppg_divisi := &data.SPPGDivisi{
+		SPPGID:    sppg.ID,
+		DivisiID:  input.DivisiID,
+		JumlahSDM: input.JumlahSDM,
+	}
+
+	if data.ValidateSPPGDivisi(v, sppg_divisi); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	err = app.models.SPPG.InsertDivisi(sppg_divisi)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrDuplicateSPPGDivisi):
+			v := validator.New()
+			v.AddError("divisi_id", "divisi sudah terdaftar pada SPPG ini")
+			app.failedValidationResponse(w, r, v.Errors)
+
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusCreated, envelope{"sppg_divisi": sppg_divisi}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
 type RingkasanAlokasi struct {
 	SPPGID   int64  `json:"sppg_id"`
 	RowID    int    `json:"row_id"`

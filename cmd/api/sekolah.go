@@ -32,7 +32,7 @@ func (app *application) createSekolahHandler(w http.ResponseWriter, r *http.Requ
 	var input struct {
 		Nama         string  `json:"nama"`
 		Alamat       string  `json:"alamat"`
-		Tingkat      string  `json:"tingkat"`
+		Kategori     string  `json:"kategori"`
 		JumlahSiswa  int     `json:"jumlah_siswa"`
 		Kecamatan_ID int64   `json:"kecamatan_id"`
 		Kelurahan_ID int64   `json:"kelurahan_id"`
@@ -55,7 +55,7 @@ func (app *application) createSekolahHandler(w http.ResponseWriter, r *http.Requ
 	sekolah := &data.Sekolah{
 		Nama:         input.Nama,
 		Alamat:       input.Alamat,
-		Tingkat:      input.Tingkat,
+		Kategori:     input.Kategori,
 		Kecamatan_ID: input.Kecamatan_ID,
 		Kelurahan_ID: input.Kelurahan_ID,
 		JumlahSiswa:  input.JumlahSiswa,
@@ -210,7 +210,7 @@ func (app *application) updateSekolahHandler(w http.ResponseWriter, r *http.Requ
 	var input struct {
 		Nama         *string  `json:"nama"`
 		Alamat       *string  `json:"alamat"`
-		Tingkat      *string  `json:"tingkat"`
+		Kategori     *string  `json:"Kategori"`
 		JumlahSiswa  *int     `json:"jumlah_siswa"`
 		Kecamatan_ID *int64   `json:"kecamatan_id"`
 		Kelurahan_ID *int64   `json:"kelurahan_id"`
@@ -232,8 +232,8 @@ func (app *application) updateSekolahHandler(w http.ResponseWriter, r *http.Requ
 		sekolah.Alamat = *input.Alamat
 	}
 
-	if input.Tingkat != nil {
-		sekolah.Tingkat = *input.Tingkat
+	if input.Kategori != nil {
+		sekolah.Kategori = *input.Kategori
 	}
 
 	if input.Kecamatan_ID != nil {

@@ -11,28 +11,50 @@ import (
 	"github.com/lib/pq"
 )
 
+var ErrDuplicateSPPGDivisi = errors.New("duplicate sppg divisi")
+
 type SPPG struct {
-	ID                    int64     `json:"id,omitempty"`
-	CreatedAt             time.Time `json:"created_at,omitempty"`
-	UserID                int64     `json:"user_id,omitempty"`
-	Nama                  *string   `json:"nama,omitempty"`
-	Alamat                *string   `json:"alamat,omitempty"`
-	SosmedURL             []string  `json:"sosmed_url,omitempty"`
-	KepalaSPPG            *string   `json:"kepala_sppg,omitempty"`
-	NomorTelepon          string    `json:"nomor_telepon,omitempty"`
-	Email                 string    `json:"email,omitempty"`
-	Latitude              float64   `json:"latitude,omitempty"`
-	Longitude             float64   `json:"longitude,omitempty"`
-	Kecamatan             string    `json:"kecamatan,omitempty"`
-	Kelurahan             string    `json:"kelurahan,omitempty"`
-	Kecamatan_ID          *int64    `json:"kecamatan_id,omitempty"`
-	Kelurahan_ID          *int64    `json:"kelurahan_id,omitempty"`
-	JumlahSekolah         uint8     `json:"jumlah_sekolah"`
-	JumlahPosyandu        uint8     `json:"jumlah_posyandu"`
-	JumlahPenerimaManfaat uint16    `json:"jumlah_penerima_manfaat"`
-	KapasitasPorsi        int       `json:"kapasitas_porsi,omitempty"`
-	StatusAktif           bool      `json:"status_aktif,omitempty"`
-	Version               int32     `json:"version,omitempty"`
+	ID                    int64        `json:"id,omitempty"`
+	CreatedAt             time.Time    `json:"created_at,omitempty"`
+	UserID                int64        `json:"user_id,omitempty"`
+	Nama                  *string      `json:"nama,omitempty"`
+	Alamat                *string      `json:"alamat,omitempty"`
+	SosmedURL             []string     `json:"sosmed_url,omitempty"`
+	KepalaSPPG            *string      `json:"kepala_sppg,omitempty"`
+	NomorTelepon          string       `json:"nomor_telepon,omitempty"`
+	Email                 string       `json:"email,omitempty"`
+	Latitude              float64      `json:"latitude,omitempty"`
+	Longitude             float64      `json:"longitude,omitempty"`
+	Kecamatan             string       `json:"kecamatan,omitempty"`
+	Kelurahan             string       `json:"kelurahan,omitempty"`
+	Kecamatan_ID          *int64       `json:"kecamatan_id,omitempty"`
+	Kelurahan_ID          *int64       `json:"kelurahan_id,omitempty"`
+	JumlahSekolah         uint8        `json:"jumlah_sekolah"`
+	JumlahPosyandu        uint8        `json:"jumlah_posyandu"`
+	JumlahPenerimaManfaat uint16       `json:"jumlah_penerima_manfaat"`
+	KapasitasPorsi        int          `json:"kapasitas_porsi,omitempty"`
+	StatusAktif           bool         `json:"status_aktif,omitempty"`
+	Version               int32        `json:"version,omitempty"`
+	Divisi                []SPPGDivisi `json:"divisi,omitempty"`
+}
+
+type SPPGDivisi struct {
+	ID         int64      `json:"id"`
+	SPPGID     int64      `json:"sppg_id,omitempty"`
+	DivisiID   int64      `json:"divisi_id,omitempty"`
+	DivisiNama string     `json:"divisi_nama"`
+	JumlahSDM  int64      `json:"jumlah_sdm"`
+	CreatedAt  *time.Time `json:"created_at,omitempty"`
+	UpdatedAt  *time.Time `json:"updated_at,omitempty"`
+	Version    int32      `json:"version"`
+}
+
+func ValidateSPPGDivisi(v *validator.Validator, sppgDivisi *SPPGDivisi) {
+	v.Check(sppgDivisi.SPPGID > 0, "sppg_id", "must be provided")
+
+	v.Check(sppgDivisi.DivisiID > 0, "divisi_id", "must be provided")
+
+	v.Check(sppgDivisi.JumlahSDM >= 0, "jumlah_sdm", "must be greater than or equal to 0")
 }
 
 func ValidateSPPG(v *validator.Validator, sppg *SPPG) {
@@ -324,15 +346,48 @@ func (m SPPGModel) GetAll(nama string, kecamatan_id int64, kelurahan_id int64, s
 		s.email,
 		s.kapasitas_porsi,
 		(
-			SELECT COUNT(*)
-			FROM sekolah sk
-			WHERE sk.sppg_id = s.id
-		) AS jumlah_sekolah,
-		(
-			SELECT COUNT(*)
-			FROM posyandu ps
-			WHERE ps.sppg_id = s.id
-		) AS jumlah_posyandu,
+        SELECT COUNT(*)
+        FROM sekolah sk
+        WHERE sk.sppg_id = s.id
+          AND sk.deleted_at IS NULL
+    ) AS jumlah_sekolah,
+
+    (
+        SELECT COUNT(*)
+        FROM posyandu ps
+        WHERE ps.sppg_id = s.id
+          AND ps.deleted_at IS NULL
+    ) AS jumlah_posyandu,
+
+    (
+			COALESCE(
+					(SELECT SUM(sk.jumlah_siswa)
+						FROM sekolah sk
+						WHERE sk.sppg_id = s.id
+							AND sk.deleted_at IS NULL), 0
+			)
+			+
+			COALESCE(
+					(SELECT SUM(ps.jumlah_balita)
+						FROM posyandu ps
+						WHERE ps.sppg_id = s.id
+							AND ps.deleted_at IS NULL), 0
+			)
+			+
+			COALESCE(
+					(SELECT SUM(ps.jumlah_ibu_hamil)
+						FROM posyandu ps
+						WHERE ps.sppg_id = s.id
+							AND ps.deleted_at IS NULL), 0
+			)
+			+
+			COALESCE(
+					(SELECT SUM(ps.jumlah_ibu_menyusui)
+						FROM posyandu ps
+						WHERE ps.sppg_id = s.id
+							AND ps.deleted_at IS NULL), 0
+			)
+    ) AS total_penerima_manfaat,
 		s.kecamatan_id,
 		COALESCE(k.name, '') AS kecamatan,
 		s.kelurahan_id,
@@ -390,6 +445,9 @@ func (m SPPGModel) GetAll(nama string, kecamatan_id int64, kelurahan_id int64, s
 			&sppg.NomorTelepon,
 			&sppg.Email,
 			&sppg.KapasitasPorsi,
+			&sppg.JumlahSekolah,
+			&sppg.JumlahPosyandu,
+			&sppg.JumlahPenerimaManfaat,
 			&sppg.Kecamatan_ID,
 			&sppg.Kecamatan,
 			&sppg.Kelurahan_ID,
@@ -482,7 +540,58 @@ func (m SPPGModel) Get(id int64) (*SPPG, error) {
 		}
 	}
 
+	// Ambil data divisi
+	sppg.Divisi, err = m.getDivisi(ctx, sppg.ID)
+	if err != nil {
+		return nil, err
+	}
+
 	return &sppg, nil
+}
+
+func (m SPPGModel) getDivisi(ctx context.Context, sppgID int64) ([]SPPGDivisi, error) {
+	query := `
+		SELECT
+			sd.id,
+			d.nama,
+			sd.jumlah_sdm,
+			sd.version
+		FROM sppg_divisi sd
+		JOIN divisi_sppg d
+			ON d.id = sd.divisi_id
+		WHERE sd.sppg_id = $1
+		ORDER BY d.urutan;
+	`
+
+	rows, err := m.DB.QueryContext(ctx, query, sppgID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	divisi := []SPPGDivisi{}
+
+	for rows.Next() {
+		var d SPPGDivisi
+
+		err := rows.Scan(
+			&d.ID,
+			&d.DivisiNama,
+			&d.JumlahSDM,
+			&d.Version,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		divisi = append(divisi, d)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return divisi, nil
 }
 
 type KelengkapanData struct {
@@ -664,6 +773,45 @@ RETURNING version`
 		default:
 			return err
 		}
+	}
+	return nil
+}
+
+func (m SPPGModel) InsertDivisi(sppg_divisi *SPPGDivisi) error {
+	query := `
+	INSERT INTO sppg_divisi (
+		sppg_id,
+		divisi_id,
+		jumlah_sdm
+	)
+	VALUES ($1, $2, $3)
+	RETURNING id, created_at, version;
+`
+
+	args := []any{
+		sppg_divisi.SPPGID,
+		sppg_divisi.DivisiID,
+		sppg_divisi.JumlahSDM,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	err := m.DB.QueryRowContext(ctx, query, args...).Scan(
+		&sppg_divisi.ID,
+		&sppg_divisi.CreatedAt,
+		&sppg_divisi.Version,
+	)
+	if err != nil {
+		var pqErr *pq.Error
+
+		if errors.As(err, &pqErr) &&
+			pqErr.Code == "23505" &&
+			pqErr.Constraint == "sppg_divisi_unique" {
+			return ErrDuplicateSPPGDivisi
+		}
+
+		return err
 	}
 	return nil
 }

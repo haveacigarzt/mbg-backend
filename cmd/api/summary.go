@@ -43,3 +43,21 @@ func (app *application) sumDapurHandler(w http.ResponseWriter, r *http.Request) 
 		app.serverErrorResponse(w, r, err)
 	}
 }
+func (app *application) sumLapanganPekerjaanHandler(w http.ResponseWriter, r *http.Request) {
+
+	summary, err := app.models.Summary.GetLapanganPekerjaan()
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"summary_lapangan_pekerjaan": summary}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}

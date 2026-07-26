@@ -10,23 +10,26 @@ import (
 )
 
 type Posyandu struct {
-	ID                int64     `json:"id"`
-	CreatedAt         time.Time `json:"created_at"`
-	UpdatedAt         time.Time `json:"updated_at"`
-	Nama              string    `json:"nama"`
-	Alamat            string    `json:"alamat"`
-	Kecamatan         string    `json:"kecamatan,omitempty"`
-	Kelurahan         string    `json:"kelurahan,omitempty"`
-	Kecamatan_ID      int64     `json:"kecamatan_id"`
-	Kelurahan_ID      int64     `json:"kelurahan_id"`
-	Latitude          float64   `json:"latitude"`
-	Longitude         float64   `json:"longitude"`
-	JumlahBalita      uint16    `json:"jumlah_balita"`
-	JumlahIbuHamil    uint16    `json:"jumlah_ibu_hamil"`
-	JumlahIbuMenyusui uint16    `json:"jumlah_ibu_menyusui"`
-	SPPGID            int64     `json:"sppg_id"`
-	Version           int32     `json:"version"`
-	UserID            *int64    `json:"user_id"`
+	ID                         int64     `json:"id"`
+	CreatedAt                  time.Time `json:"created_at"`
+	UpdatedAt                  time.Time `json:"updated_at"`
+	Nama                       string    `json:"nama"`
+	Alamat                     string    `json:"alamat"`
+	Kecamatan                  string    `json:"kecamatan,omitempty"`
+	Kelurahan                  string    `json:"kelurahan,omitempty"`
+	Kecamatan_ID               int64     `json:"kecamatan_id"`
+	Kelurahan_ID               int64     `json:"kelurahan_id"`
+	Latitude                   float64   `json:"latitude"`
+	Longitude                  float64   `json:"longitude"`
+	JumlahBalita               uint16    `json:"jumlah_balita"`
+	JumlahIbuHamil             uint16    `json:"jumlah_ibu_hamil"`
+	JumlahIbuMenyusui          uint16    `json:"jumlah_ibu_menyusui"`
+	JumlahBalitaTerpantau      uint16    `json:"jumlah_balita_terpantau"`
+	JumlahIbuHamilTerpantau    uint16    `json:"jumlah_ibu_hamil_terpantau"`
+	JumlahIbuMenyusuiTerpantau uint16    `json:"jumlah_ibu_menyusui_terpantau"`
+	SPPGID                     int64     `json:"sppg_id"`
+	Version                    int32     `json:"version"`
+	UserID                     *int64    `json:"user_id"`
 }
 
 func ValidatePosyandu(v *validator.Validator, posyandu *Posyandu) {
@@ -122,21 +125,24 @@ func (m PosyanduModel) GetAll(nama string, kecamatan_id int64, kelurahan_id int6
 		p.longitude,
 		p.sppg_id,
 		p.user_id,
+		p.jumlah_balita,
+		p.jumlah_ibu_hamil,
+		p.jumlah_ibu_menyusui,
 		(
 			SELECT COUNT(*)
 			FROM balita b
 			WHERE b.posyandu_id = p.id
-		) AS jumlah_balita,
+		) AS jumlah_balita_terpantau,
 		(
 			SELECT COUNT(*)
 			FROM bumil bm
 			WHERE bm.posyandu_id = p.id
-		) AS jumlah_ibu_hamil,
+		) AS jumlah_ibu_hamil_terpantau,
 		(
 			SELECT COUNT(*)
 			FROM busui bs
 			WHERE bs.posyandu_id = p.id
-		) AS jumlah_ibu_menyusui,
+		) AS jumlah_ibu_menyusui_terpantau,
 		p.version
 	FROM posyandu p
 	LEFT JOIN kecamatan k ON k.id = p.kecamatan_id
@@ -145,6 +151,7 @@ func (m PosyanduModel) GetAll(nama string, kecamatan_id int64, kelurahan_id int6
 	AND (p.kecamatan_id = $2 OR $2 = 0)
 	AND (p.kelurahan_id = $3 OR $3 = 0)
 	AND (p.sppg_id = $4 OR $4 = 0)
+	AND p.deleted_at IS NULL
 	ORDER BY %s %s, id ASC
 	LIMIT $5 OFFSET $6`,
 		filters.sortColumn(),
@@ -187,6 +194,9 @@ func (m PosyanduModel) GetAll(nama string, kecamatan_id int64, kelurahan_id int6
 			&posyandu.JumlahBalita,
 			&posyandu.JumlahIbuHamil,
 			&posyandu.JumlahIbuMenyusui,
+			&posyandu.JumlahBalitaTerpantau,
+			&posyandu.JumlahIbuHamilTerpantau,
+			&posyandu.JumlahIbuMenyusuiTerpantau,
 			&posyandu.Version,
 		)
 		if err != nil {

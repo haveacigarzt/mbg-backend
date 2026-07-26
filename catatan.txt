@@ -56,6 +56,108 @@ const quickLogins = [
   }
 ];
 
+GET /v1/summary/penerimamanfaat
+response:
+{
+  "summary_penerima_manfaat": {
+    "total_penerima_manfaat": 17,
+    "total_peserta_didik": 6,
+    "total_bumil": 4,
+    "total_busui": 3,
+    "total_balita": 4,
+    "total_aps": 0,
+    "total_ats": 0
+  }
+}
+
+GET /v1/summary/dapur
+response: {
+  "summary_dapur": {
+    "operasional": {
+      "total_dapur": 6,
+      "total_dapur_aktif": 5,
+      "total_dapur_nonaktif": 1
+    },
+    "sebaran": [
+      {
+        "kecamatan_id": 3,
+        "kecamatan": "KAPUAS",
+        "jumlah_dapur": 2
+      },
+      {
+        "kecamatan_id": 4,
+        "kecamatan": "MUKOK",
+        "jumlah_dapur": 2
+      },
+      {
+        "kecamatan_id": 1,
+        "kecamatan": "TOBA",
+        "jumlah_dapur": 2
+      },
+      {
+        "kecamatan_id": 9,
+        "kecamatan": "BALAI",
+        "jumlah_dapur": 0
+      },
+      {
+        "kecamatan_id": 12,
+        "kecamatan": "BEDUAI",
+        "jumlah_dapur": 0
+      },
+      {
+        "kecamatan_id": 6,
+        "kecamatan": "BONTI",
+        "jumlah_dapur": 0
+      },
+      {
+        "kecamatan_id": 15,
+        "kecamatan": "ENTIKONG",
+        "jumlah_dapur": 0
+      },
+      {
+        "kecamatan_id": 5,
+        "kecamatan": "JANGKANG",
+        "jumlah_dapur": 0
+      },
+      {
+        "kecamatan_id": 11,
+        "kecamatan": "KEMBAYAN",
+        "jumlah_dapur": 0
+      },
+      {
+        "kecamatan_id": 2,
+        "kecamatan": "MELIAU",
+        "jumlah_dapur": 0
+      },
+      {
+        "kecamatan_id": 13,
+        "kecamatan": "NOYAN",
+        "jumlah_dapur": 0
+      },
+      {
+        "kecamatan_id": 7,
+        "kecamatan": "PARINDU",
+        "jumlah_dapur": 0
+      },
+      {
+        "kecamatan_id": 14,
+        "kecamatan": "SEKAYAM",
+        "jumlah_dapur": 0
+      },
+      {
+        "kecamatan_id": 8,
+        "kecamatan": "TAYAN HILIR",
+        "jumlah_dapur": 0
+      },
+      {
+        "kecamatan_id": 10,
+        "kecamatan": "TAYAN HULU",
+        "jumlah_dapur": 0
+      }
+    ]
+  }
+}
+
 role id:
 1: admin
 2: stakeholder

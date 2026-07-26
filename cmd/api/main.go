@@ -7,6 +7,7 @@ import (
 	"flag"
 	"log/slog"
 	"mbg/internal/data"
+	"mbg/internal/jobs"
 	"mbg/internal/mailer"
 	"os"
 	"runtime"
@@ -117,6 +118,12 @@ func main() {
 		mailer: mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
 		hub:    appws.NewHub(),
 	}
+
+	cleanup := jobs.CleanupJob{
+		DB: db,
+	}
+
+	go cleanup.Run()
 
 	err = app.serve()
 	if err != nil {

@@ -1,0 +1,5 @@
+ALTER TABLE sekolah
+DROP COLUMN IF EXISTS deleted_at;
+
+ALTER TABLE posyandu
+DROP COLUMN IF EXISTS deleted_at;
