@@ -17,6 +17,47 @@ go run ./cmd/api -cors-trusted-origins="http://localhost:9002 http://localhost:9
 
 ./bin/api -port=4040 -db-dsn=postgres://rian:pas55word@localhost/mbg?sslmode=disable -cors-trusted-origins="http://localhost:5173 http://localhost:9001 http://192.168.1.14:3000 http://192.168.1.14:5173 http://192.168.1.14 http://192.168.1.2:5173 http://192.168.1.2"
 
+Untuk halaman EKSPLORASI DATA TERBUKA - KATALOG DATA TERBUKA:
+GET http://192.168.1.12:4040/v1/summary/penerimamanfaat
+response:
+{
+  "summary_penerima_manfaat": {
+    "total_penerima_manfaat": 12889,
+    "tk_paud": 0,
+    "sd_mi": 4056,
+    "smp_mts": 3440,
+    "sma_smk_ma": 4610,
+    "yayasan": 0,
+    "balita": 641,
+    "bumil": 142,
+    "busui": 0
+  }
+}
+GET http://192.168.1.12:4040/v1/summary/dapur
+response:
+{
+  "summary_dapur": {
+    "operasional": {
+      "total_dapur": 6,
+      "dapur_aktif": 5,
+      "dapur_nonaktif": 1
+    },
+    "sebaran": [
+      {
+        "kecamatan_id": 3,
+        "kecamatan": "KAPUAS",
+        "jumlah_dapur": 2
+      },
+      {
+        "kecamatan_id": 4,
+        "kecamatan": "MUKOK",
+        "jumlah_dapur": 2
+      },
+      ...
+    ]}
+}
+	
+
 const quickLogins = [
   {
     label: 'Admin',

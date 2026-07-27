@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict fupdeFMCush2nFl10GZg5Sk6RF6DLF5au4AbEb6oTBkrUgBfjjYsN3xMSAD70Yc
+\restrict i2fkxHe4yzB3qCkiXfU9rG2yPb6aha65vGjlIOdyTxLFK8VTHkongoMgF5uAfbA
 
--- Dumped from database version 18.3
--- Dumped by pg_dump version 18.3
+-- Dumped from database version 18.4
+-- Dumped by pg_dump version 18.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -221,10 +221,10 @@ COPY public.kelurahan (id, created_at, kecamatan_id, name, version) FROM stdin;
 COPY public.roles (id, name, permissions) FROM stdin;
 1	admin	{akunsppg:write,akunsppg:read,sppg:read,sekolah:read,posyandu:read,pengiriman:read,tracking:read}
 2	stakeholder	{sppg:read,sekolah:read,posyandu:read,pengiriman:read,tracking:read}
+4	driver	{pengiriman:read,pengiriman:write,tracking:read,tracking:write}
+5	posyandu	{posyandu:read,posyandu:write,balita:read,balita:write,bumil:read,bumil:write,busui:read,busui:write,aps:read,aps:write,ats:read,ats:write,pengukuran_balita:read,pengukuran_balita:write,pengukuran_bumil:read,pengukuran_bumil:write,pengukuran_busui:read,pengukuran_busui:write,pengukuran_aps:read,pengukuran_aps:write,pengukuran_ats:read,pengukuran_ats:write,pengiriman:read}
 3	sppg	{sppg:read,sppg:write,sekolah:read,sekolah:write,posyandu:read,posyandu:write,pengiriman:read,tracking:read,driver:read,driver:write,pengiriman:write}
-4	driver	{pengiriman:read,tracking:read,tracking:write,pengiriman:write}
-5	posyandu	{posyandu:read,posyandu:write,balita:read,balita:write,bumil:read,bumil:write,busui:read,busui:write,aps:read,aps:write,ats:read,ats:write,pengukuran_balita:read,pengukuran_balita:write,pengukuran_bumil:read,pengukuran_bumil:write,pengukuran_busui:read,pengukuran_busui:write,pengukuran_aps:read,pengukuran_aps:write,pengukuran_ats:read,pengukuran_ats:write}
-6	sekolah	{sekolah:read,sekolah:write,peserta_didik:read,peserta_didik:write,pengukuran_peserta_didik:read,pengukuran_peserta_didik:write}
+6	sekolah	{sekolah:read,sekolah:write,peserta_didik:read,peserta_didik:write,pengukuran_anak:read,pengukuran_anak:write,pengiriman:read}
 \.
 
 
@@ -237,8 +237,6 @@ COPY public.users (id, created_at, name, email, password_hash, activated, versio
 72	2026-06-26 20:21:38+07	sppg_pontianak	admin@sppg.example.com	\\x243261243132246b7553496636795553785a707756346535724a4b6f6558717876634e6f655a646232374238426b63564356384a5369507771415061	t	1	3	2026-06-26 23:53:45.60979	\N
 79	2026-07-02 20:53:47+07	SPPG Test2	sppg_test2@gmail.com	\\x2432612431322477535175737636633076543450745a435a794a5152754d7272547067527171394676387375574f4730784f30314e3938424438302e	t	1	3	\N	\N
 56	2026-06-24 18:21:58+07	PRAMANA AFRIANDY	pramanaafriandy@gmail.com	\\x243261243132247833583569395338656b414a6e6e7a312f6b6d4d6375522e55797a632f39524c626f70584178536842773739577a4a416a6e775132	t	1	3	\N	\N
-34	2026-05-26 11:15:10+07	Admin SPPG Pontianak Barat	admin_ponbar@sppg.id	\\x2432612431322472435442716e4f5a4d524263562f444c366e616b6c7544587a3842735949306b4f706d612f41505144624e62496c7876676c753332	t	1	3	2026-07-05 22:49:10.233053	\N
-47	2026-05-27 18:34:21+07	Driver Bunut 2	driver.bunut2@gmail.com	\\x2432612431322459316c58493564495a785a4b6438755261653759686537386c43512e6f3159312f552e75734a51303032534a5a72566b666c507753	t	1	4	2026-07-06 02:16:01.707056	\N
 73	2026-07-02 20:32:34+07	SPPG Test	sppg_test@gmail.com	\\x2432612431322478633959774a6f305a344f396f42492e775077346e756e616149485a3337686e3644556d2e59596570636253712e684a6c2e6c4269	f	3	3	\N	2026-07-05 02:01:10.602513
 48	2026-06-01 09:22:42+07	Dinas Sanggau	dinassgu@gmail.com	\\x24326124313224774a675874413644444c53596971736d346e646c5365696e3049624958392e667839414e6c6e304247456a75364e536b7a6b307775	f	1	2	2026-07-07 21:07:22.731266	\N
 50	2026-06-01 11:02:48+07	Admin SPPG Pontianak Timur	test@gmail.com	\\x243261243132242e774657386b755a4a352f6f75514539633955525a65384a587a5a674f4c49704a71416f773677625a6779306173764d2e73516169	t	1	3	\N	\N
@@ -246,10 +244,15 @@ COPY public.users (id, created_at, name, email, password_hash, activated, versio
 54	2026-06-01 11:05:37+07	Admin SPPG Pontianak Timur	test@gmail2.com	\\x243261243132244a4f642f6a616979493243414d414668316c4469674f456a50425569586e4f50447133572f5073422e696d5847526247413845714b	t	1	3	\N	\N
 87	2026-07-02 22:54:38+07	Test 2	admin@sppg.example.co	\\x2432612431322465784a64773972345955346e624c4c754e4f4172314f5a5a536d6a7353516b3679746c783172746863566e55483058333871536c6d	t	3	3	2026-07-04 01:20:40.942624	\N
 55	2026-06-02 16:21:13+07	Driver Bunut 1	driver.bunut1@gmail.com	\\x243261243132244a3043746e6f4b42483753354733617930444e702f755141524b5935504c494a696a4a775a544832456155356e63513639666b652e	t	1	4	\N	\N
-39	2026-05-26 19:06:45+07	Admin SPPG Pontianak Timur	admin_pontim@sppg.id	\\x24326124313224322e4d637370634c2f3348584b464f4e61562f55586574505843536d6e544c68585479586c6a656353303738554a6f777066702f69	t	1	3	2026-07-13 11:55:55.369026	\N
-37	2026-05-26 11:34:30+07	Rian	afriandy193@gmail.com	\\x243261243132246b633732364948335970746945486f4e696556374f6562785230552f70755134656a4e442f446d39474d773336742e52706675414b	t	2	1	2026-07-12 21:11:36.014695	\N
-46	2026-05-27 17:37:41+07	Driver Ilir Kota	driver.ilirkota@gmail.com	\\x243261243132246b7043416c6c327670555178444a564f3851586c4e6535367448536232512f5267546657616546535a706d366469374b6661745061	t	1	4	2026-07-12 21:13:13.902212	\N
 71	2026-06-24 20:46:23+07	PRAMANA AFRIANDY	pramanaafriandy@gmail.id	\\x243261243132246c5a394362444c51496d557750532e775a5933784e754363664d7573586d6f424753634a6c6e71584f6a63737034755451736c6871	t	2	3	\N	2026-07-04 19:58:43.716467
+34	2026-05-26 11:15:10+07	Admin SPPG Pontianak Barat	admin_ponbar@sppg.id	\\x2432612431322472435442716e4f5a4d524263562f444c366e616b6c7544587a3842735949306b4f706d612f41505144624e62496c7876676c753332	t	1	3	2026-07-23 14:30:47.596013	\N
+47	2026-05-27 18:34:21+07	Driver Bunut 2	driver.bunut2@gmail.com	\\x2432612431322459316c58493564495a785a4b6438755261653759686537386c43512e6f3159312f552e75734a51303032534a5a72566b666c507753	t	1	4	2026-07-23 15:30:18.579148	\N
+95	2026-07-21 12:16:09+07	Admin Posyandu Melati	admin.posyandu.melati@example.com	\\x24326124313224624773526371464f6e315766355045397a48587270654773534d4b706e2f446445576b456c5a59694e2e586a394c364e745a443365	t	1	5	2026-07-24 19:20:36.349689	\N
+93	2026-07-21 12:06:23+07	Admin SD Negeri 01 Sanggau	admin.sd001@example.com	\\x24326124313224546546574a51665a6c786463782e66355161793178757a4437656e424844753541516c624c65375146664e6f63372e7054384d2e57	t	1	6	2026-07-24 19:21:07.508428	\N
+39	2026-05-26 19:06:45+07	Admin SPPG Pontianak Timur	admin_pontim@sppg.id	\\x24326124313224322e4d637370634c2f3348584b464f4e61562f55586574505843536d6e544c68585479586c6a656353303738554a6f777066702f69	t	1	3	2026-07-27 00:22:51.410766	\N
+89	2026-07-21 12:00:55+07	Admin SD Negeri 01 Sanggau	admin.sd01@example.com	\\x243261243132247a555753536e6666373653417a55644d36724c46794f77785470734d327a69336b7067704934736957326c2f7a355371496f315757	t	1	6	\N	\N
+37	2026-05-26 11:34:30+07	Rian	afriandy193@gmail.com	\\x243261243132246b633732364948335970746945486f4e696556374f6562785230552f70755134656a4e442f446d39474d773336742e52706675414b	t	2	1	2026-07-23 13:59:34.985344	\N
+46	2026-05-27 17:37:41+07	Driver Ilir Kota	driver.ilirkota@gmail.com	\\x243261243132246b7043416c6c327670555178444a564f3851586c4e6535367448536232512f5267546657616546535a706d366469374b6661745061	t	1	4	2026-07-23 14:29:48.415362	\N
 \.
 
 
@@ -257,16 +260,13 @@ COPY public.users (id, created_at, name, email, password_hash, activated, versio
 -- Data for Name: sppg; Type: TABLE DATA; Schema: public; Owner: rian
 --
 
-COPY public.sppg (id, user_id, created_at, updated_at, nama, alamat, sosmed_url, kepala_sppg, nomor_telepon, email, latitude, longitude, kapasitas_porsi, status_aktif, version, kecamatan_id, kelurahan_id) FROM stdin;
-5	39	2026-05-26 19:06:45+07	2026-05-26 19:06:45+07	SPPG ILIR KOTA - KOTA SANGGAU	Jl. Jenderal Ahmad Yani No.17	{https://instagram.com/sppgsanggaukpsilirkota}	Siti Rahmawati	081345678901	sppg.kapuas.ilirkota@email.com	0.1235888731544522	110.60401022845096	2500	t	5	3	40
-4	34	2026-05-26 11:15:10+07	2026-05-26 11:15:10+07	SPPG Bunut Sanggau	Jl. Jenderal Ahmad Yani No.17	{https://www.facebook.com}	Budi Santosa	08123456789	sppg.kapuas.ilirkota@email.com	0.1235888731544522	110.60401022845096	1000	t	27	3	41
-7	52	2026-06-01 11:03:56+07	2026-06-01 11:03:56+07	SPPG Pontianak Timur	Jl. Tanjung Raya II No. 88, Pontianak Timur	{https://www.instagram.com/sppg.pontianaktimur}	Siti Rahmawati	081345678901	pontim@sppg.id	-0.0152	109.3698	2500	t	1	4	5
-8	54	2026-06-01 11:05:37+07	2026-06-01 11:05:37+07	SPPG Pontianak Timur	Jl. Tanjung Raya II No. 88, Pontianak Timur	{https://www.instagram.com/sppg.pontianaktimur}	Siti Rahmawati	081345678901	pontim@sppg.id	-0.0152	109.3698	2500	t	1	4	5
-14	71	2026-06-24 20:46:23+07	2026-06-24 20:46:23+07	\N	\N	{}	\N			0	0	0	t	1	\N	\N
-15	72	2026-06-26 20:21:38+07	2026-06-26 20:21:38+07	asas	Jl. Ahmad Yani No. 123, Pontianak	{https://instagram.com/sppg_pontianak,https://facebook.com/sppg.pontianak}	Budi Santoso	081234567890	sppg@example.com	-0.02633	109.342504	1500	t	1	1	1
-16	73	2026-07-02 20:32:34+07	2026-07-02 20:32:34+07	SPPG Test	\N	{}	\N			0	0	0	t	1	\N	\N
-17	79	2026-07-02 20:53:47+07	2026-07-02 20:53:47+07	SPPG Test2	\N	{}	\N			0	0	0	t	1	\N	\N
-18	87	2026-07-02 22:54:38+07	2026-07-02 22:54:38+07	Test 2	Jl. Ahmad Yani No. 123, Pontianak	{https://instagram.com/sppg_pontianak,https://facebook.com/sppg.pontianak}	Budi Santoso	081234567890	sppg@example.com	-0.02633	109.342504	1500	f	1	1	1
+COPY public.sppg (id, user_id, created_at, updated_at, nama, alamat, sosmed_url, kepala_sppg, nomor_telepon, email, latitude, longitude, kecamatan_id, kelurahan_id, kapasitas_porsi, status_aktif, version) FROM stdin;
+5	39	2026-05-26 19:06:45+07	2026-05-26 19:06:45+07	SPPG ILIR KOTA - KOTA SANGGAU	Jl. Jenderal Ahmad Yani No.17	{https://instagram.com/sppgsanggaukpsilirkota}	Siti Rahmawati	081345678901	sppg.kapuas.ilirkota@email.com	0.1235888731544522	110.60401022845096	3	40	2500	t	5
+4	34	2026-05-26 11:15:10+07	2026-05-26 11:15:10+07	SPPG Bunut Sanggau	Jl. Jenderal Ahmad Yani No.17	{https://www.facebook.com}	Budi Santosa	08123456789	sppg.kapuas.ilirkota@email.com	0.1235888731544522	110.60401022845096	3	41	1000	t	27
+7	52	2026-06-01 11:03:56+07	2026-06-01 11:03:56+07	SPPG Pontianak Timur	Jl. Tanjung Raya II No. 88, Pontianak Timur	{https://www.instagram.com/sppg.pontianaktimur}	Siti Rahmawati	081345678901	pontim@sppg.id	-0.0152	109.3698	4	5	2500	t	1
+8	54	2026-06-01 11:05:37+07	2026-06-01 11:05:37+07	SPPG Pontianak Timur	Jl. Tanjung Raya II No. 88, Pontianak Timur	{https://www.instagram.com/sppg.pontianaktimur}	Siti Rahmawati	081345678901	pontim@sppg.id	-0.0152	109.3698	4	5	2500	t	1
+15	72	2026-06-26 20:21:38+07	2026-06-26 20:21:38+07	asas	Jl. Ahmad Yani No. 123, Pontianak	{https://instagram.com/sppg_pontianak,https://facebook.com/sppg.pontianak}	Budi Santoso	081234567890	sppg@example.com	-0.02633	109.342504	1	1	1500	t	1
+18	87	2026-07-02 22:54:38+07	2026-07-02 22:54:38+07	Test 2	Jl. Ahmad Yani No. 123, Pontianak	{https://instagram.com/sppg_pontianak,https://facebook.com/sppg.pontianak}	Budi Santoso	081234567890	sppg@example.com	-0.02633	109.342504	1	1	1500	f	1
 \.
 
 
@@ -283,7 +283,11 @@ COPY public.alokasi_harian (id, sppg_id, tanggal, jumlah, created_at, updated_at
 6	5	2026-06-21	8700210	2026-06-21 11:00:20.13874	2026-06-21 21:31:45.854566
 7	4	2026-06-24	5000000	2026-06-24 13:54:06.657179	2026-06-24 13:54:06.657179
 8	5	2026-07-12	2999999	2026-07-12 17:23:37.3622	2026-07-12 17:23:37.3622
-9	5	2026-07-13	200000	2026-07-13 00:12:11.220373	2026-07-13 00:12:11.220373
+9	5	2026-07-13	9000000	2026-07-13 00:12:11.220373	2026-07-13 21:47:51.528613
+10	5	2026-07-14	5000000	2026-07-14 10:44:09.993863	2026-07-14 10:44:09.993863
+11	5	2026-07-15	999999	2026-07-15 16:54:14.519405	2026-07-15 16:57:01.072931
+12	4	2026-07-23	5000000	2026-07-23 13:07:39.967698	2026-07-23 13:07:39.967698
+13	5	2026-07-23	2000000	2026-07-23 13:13:34.150771	2026-07-23 13:13:34.150771
 \.
 
 
@@ -292,6 +296,23 @@ COPY public.alokasi_harian (id, sppg_id, tanggal, jumlah, created_at, updated_at
 --
 
 COPY public.penduduk (id, nik, nama, jenis_kelamin, tanggal_lahir, kelurahan_id, alamat, no_hp, kategori, created_at, updated_at, deleted_at) FROM stdin;
+4	6101010101010001	Budi Santoso	L	2016-08-15	41	Jl. Jenderal Sudirman No. 10, Sanggau	081234567890	PESERTA_DIDIK	2026-07-22 09:06:31.915802	2026-07-22 09:06:31.915802	\N
+10	6101010101010002	Budi Santoso	L	2016-08-15	41	Jl. Jenderal Sudirman No. 10, Sanggau	081234567890	PESERTA_DIDIK	2026-07-22 09:20:25.991471	2026-07-22 09:20:25.991471	\N
+15	6101011508210001	Andi Saputra	L	2024-08-15	1	Jl. Pembangunan No. 12, Sanggau	081234567890	BALITA	2026-07-22 10:41:17.642412	2026-07-22 10:41:17.642412	\N
+19	6101010101010003	Budi Santoso	L	2016-08-15	41	Jl. Jenderal Sudirman No. 10, Sanggau	081234567890	PESERTA_DIDIK	2026-07-22 14:53:16.669763	2026-07-22 14:53:16.669763	\N
+31	6101010101010006	Rian	L	2016-08-15	41	Jl. Jenderal Sudirman No. 10, Sanggau	081234567890	PESERTA_DIDIK	2026-07-22 15:23:28.451261	2026-07-22 15:23:28.451261	\N
+37	6101010101010090	Budi Santoso	L	2016-08-15	41	Jl. Jenderal Sudirman No. 10, Sanggau	081234567895	PESERTA_DIDIK	2026-07-22 15:26:35.722045	2026-07-22 15:26:35.722045	\N
+41	6101010101010009	Budi Santoso	L	2016-08-15	41	Jl. Jenderal Sudirman No. 10, Sanggau		PESERTA_DIDIK	2026-07-23 08:36:42.346479	2026-07-23 08:36:42.346479	\N
+43	6101011508210031	Andi Saputra	L	2024-08-15	1	Jl. Pembangunan No. 12, Sanggau	081234567890	BALITA	2026-07-23 08:51:32.331724	2026-07-23 08:51:32.331724	\N
+45	6101011508210008	Andi Saputra	L	2024-08-15	1	Jl. Pembangunan No. 12, Sanggau	081234567890	BALITA	2026-07-23 09:11:41.03258	2026-07-23 09:11:41.03258	\N
+46	6101011508210012	Andri Saputra	L	2024-08-15	1	Jl. Pembangunan No. 12, Sanggau	081234567890	BALITA	2026-07-23 09:12:08.486314	2026-07-23 09:12:08.486314	\N
+48	6101015001980021	Nur Aini	P	1998-01-05	1	Jl. Ahmad Yani No. 15, Sanggau	081234567890	BUMIL	2026-07-23 10:04:30.922024	2026-07-23 10:04:30.922024	\N
+16	6101015001980001	Nur Aisyah	P	1998-01-05	1	Jl. Ahmad Yani No. 15, Sanggau	081234567890	BUMIL	2026-07-22 10:56:36.481141	2026-07-22 10:56:36.481141	\N
+14	6101014501980001	Dewi Lestari	P	1998-01-05	1	Jl. Ahmad Yani No. 15, Sanggau	081234567890	BUSUI	2026-07-22 10:38:30.578379	2026-07-22 10:38:30.578379	\N
+50	6101015001980090	Aisyah	P	1998-01-05	1	Jl. Ahmad Yani No. 15, Sanggau	081234567890	BUMIL	2026-07-23 10:33:13.684254	2026-07-23 10:33:13.684254	\N
+53	6101015001980006	Aisyah	P	1998-01-05	1	Jl. Ahmad Yani No. 15, Sanggau	081234567890	BUMIL	2026-07-23 10:39:31.016972	2026-07-23 10:39:31.016972	\N
+55	6101014501980900	Dewi Lestari	P	1998-01-05	1	Jl. Ahmad Yani No. 15, Sanggau	081234567890	BUSUI	2026-07-23 11:22:21.800377	2026-07-23 11:22:21.800377	\N
+56	6101014501980990	Dewi Lestari 2	P	1998-01-05	1	Jl. Ahmad Yani No. 15, Sanggau	081234567890	BUSUI	2026-07-23 11:22:44.432777	2026-07-23 11:22:44.432777	\N
 \.
 
 
@@ -299,26 +320,28 @@ COPY public.penduduk (id, nik, nama, jenis_kelamin, tanggal_lahir, kelurahan_id,
 -- Data for Name: sekolah; Type: TABLE DATA; Schema: public; Owner: rian
 --
 
-COPY public.sekolah (id, created_at, nama, kategori, jumlah_siswa, latitude, longitude, alamat, version, sppg_id, updated_at, kecamatan_id, kelurahan_id, user_id, deleted_at) FROM stdin;
-32	2026-05-26 21:08:41+07	SD Negeri 04 Bunut	SD/MI	420	0.1268353398297325	110.5690282709128	Jl. Bunut 4	3	4	2026-05-26 21:08:41+07	3	164	\N	\N
-37	2026-05-26 21:08:41+07	SMP Negeri 04 Bunut	SMP/MTs	720	0.1268353398297325	110.5690282709128	Jl. SMP Bunut 4	3	4	2026-05-26 21:08:41+07	3	164	\N	\N
-38	2026-05-26 21:08:41+07	SMA Negeri 01 Bunut	SMA/SMK/MA	920	0.1268353398297325	110.5690282709128	Jl. SMA Bunut 1	3	4	2026-05-26 21:08:41+07	3	164	\N	\N
-41	2026-05-26 21:09:49+07	SD Negeri 01 Ilir Kota	SD/MI	390	0.12770046445395156	110.60128011718128	Jl. Ilir Kota 1	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
-42	2026-05-26 21:09:49+07	SD Negeri 02 Ilir Kota	SD/MI	410	0.12770046445395156	110.60128011718128	Jl. Ilir Kota 2	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
-43	2026-05-26 21:09:49+07	SD Negeri 03 Ilir Kota	SD/MI	430	0.12770046445395156	110.60128011718128	Jl. Ilir Kota 3	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
-44	2026-05-26 21:09:49+07	SD Negeri 04 Ilir Kota	SD/MI	370	0.12770046445395156	110.60128011718128	Jl. Ilir Kota 4	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
-45	2026-05-26 21:09:49+07	SD Negeri 05 Ilir Kota	SD/MI	400	0.12770046445395156	110.60128011718128	Jl. Ilir Kota 5	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
-46	2026-05-26 21:09:49+07	SMP Negeri 01 Ilir Kota	SMP/MTs	640	0.12770046445395156	110.60128011718128	Jl. SMP Ilir Kota 1	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
-47	2026-05-26 21:09:49+07	SMP Negeri 02 Ilir Kota	SMP/MTs	690	0.12770046445395156	110.60128011718128	Jl. SMP Ilir Kota 2	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
-48	2026-05-26 21:09:49+07	SMP Negeri 03 Ilir Kota	SMP/MTs	720	0.12770046445395156	110.60128011718128	Jl. SMP Ilir Kota 3	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
-49	2026-05-26 21:09:49+07	SMP Negeri 04 Ilir Kota	SMP/MTs	670	0.12770046445395156	110.60128011718128	Jl. SMP Ilir Kota 4	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
-50	2026-05-26 21:09:49+07	SMA Negeri 01 Ilir Kota	SMA/SMK/MA	910	0.12770046445395156	110.60128011718128	Jl. SMA Ilir Kota 1	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
-51	2026-05-26 21:09:49+07	SMA Negeri 02 Ilir Kota	SMA/SMK/MA	940	0.12770046445395156	110.60128011718128	Jl. SMA Ilir Kota 2	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
-53	2026-05-31 00:44:15+07	SMA Negeri 50 Sanggau	SMA/SMK/MA	950	0.1268353398297325	110.5690282709128	Jl. Ahmad Yani No. 90	3	4	2026-05-31 00:44:15+07	3	164	\N	\N
-57	2026-06-01 23:47:06+07	asas	SD/MI	33	0.1268353398297325	110.5690282709128	asasa	2	4	2026-06-01 23:47:06+07	5	164	\N	\N
-58	2026-06-02 00:00:12+07	asas	SD/MI	888	0.1268353398297325	110.5690282709128	asassa	2	4	2026-06-02 00:00:12+07	5	164	\N	\N
-59	2026-06-02 00:01:52+07	BBB	SD/MI	3	0.1268353398297325	110.5690282709128	asas	2	4	2026-06-02 00:01:52+07	5	164	\N	\N
-52	2026-05-26 21:09:49+07	SMA Negeri 03 Ilir Kota	SMA/SMK/MA	890	0.12770046445395156	110.60128011718128	Jl. SMA Ilir Kota 3	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
+COPY public.sekolah (id, created_at, nama, alamat, kategori, jumlah_siswa, latitude, longitude, version, sppg_id, updated_at, kecamatan_id, kelurahan_id, user_id, deleted_at) FROM stdin;
+32	2026-05-26 21:08:41+07	SD Negeri 04 Bunut	Jl. Bunut 4	SD/MI	420	0.1268353398297325	110.5690282709128	3	4	2026-05-26 21:08:41+07	3	164	\N	\N
+37	2026-05-26 21:08:41+07	SMP Negeri 04 Bunut	Jl. SMP Bunut 4	SMP/MTs	720	0.1268353398297325	110.5690282709128	3	4	2026-05-26 21:08:41+07	3	164	\N	\N
+38	2026-05-26 21:08:41+07	SMA Negeri 01 Bunut	Jl. SMA Bunut 1	SMA/SMK/MA	920	0.1268353398297325	110.5690282709128	3	4	2026-05-26 21:08:41+07	3	164	\N	\N
+41	2026-05-26 21:09:49+07	SD Negeri 01 Ilir Kota	Jl. Ilir Kota 1	SD/MI	390	0.12770046445395156	110.60128011718128	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
+42	2026-05-26 21:09:49+07	SD Negeri 02 Ilir Kota	Jl. Ilir Kota 2	SD/MI	410	0.12770046445395156	110.60128011718128	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
+43	2026-05-26 21:09:49+07	SD Negeri 03 Ilir Kota	Jl. Ilir Kota 3	SD/MI	430	0.12770046445395156	110.60128011718128	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
+44	2026-05-26 21:09:49+07	SD Negeri 04 Ilir Kota	Jl. Ilir Kota 4	SD/MI	370	0.12770046445395156	110.60128011718128	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
+45	2026-05-26 21:09:49+07	SD Negeri 05 Ilir Kota	Jl. Ilir Kota 5	SD/MI	400	0.12770046445395156	110.60128011718128	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
+46	2026-05-26 21:09:49+07	SMP Negeri 01 Ilir Kota	Jl. SMP Ilir Kota 1	SMP/MTs	640	0.12770046445395156	110.60128011718128	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
+47	2026-05-26 21:09:49+07	SMP Negeri 02 Ilir Kota	Jl. SMP Ilir Kota 2	SMP/MTs	690	0.12770046445395156	110.60128011718128	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
+48	2026-05-26 21:09:49+07	SMP Negeri 03 Ilir Kota	Jl. SMP Ilir Kota 3	SMP/MTs	720	0.12770046445395156	110.60128011718128	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
+49	2026-05-26 21:09:49+07	SMP Negeri 04 Ilir Kota	Jl. SMP Ilir Kota 4	SMP/MTs	670	0.12770046445395156	110.60128011718128	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
+50	2026-05-26 21:09:49+07	SMA Negeri 01 Ilir Kota	Jl. SMA Ilir Kota 1	SMA/SMK/MA	910	0.12770046445395156	110.60128011718128	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
+51	2026-05-26 21:09:49+07	SMA Negeri 02 Ilir Kota	Jl. SMA Ilir Kota 2	SMA/SMK/MA	940	0.12770046445395156	110.60128011718128	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
+53	2026-05-31 00:44:15+07	SMA Negeri 50 Sanggau	Jl. Ahmad Yani No. 90	SMA/SMK/MA	950	0.1268353398297325	110.5690282709128	3	4	2026-05-31 00:44:15+07	3	164	\N	\N
+57	2026-06-01 23:47:06+07	asas	asasa	SD/MI	33	0.1268353398297325	110.5690282709128	2	4	2026-06-01 23:47:06+07	5	164	\N	\N
+58	2026-06-02 00:00:12+07	asas	asassa	SD/MI	888	0.1268353398297325	110.5690282709128	2	4	2026-06-02 00:00:12+07	5	164	\N	\N
+59	2026-06-02 00:01:52+07	BBB	asas	SD/MI	3	0.1268353398297325	110.5690282709128	2	4	2026-06-02 00:01:52+07	5	164	\N	\N
+52	2026-05-26 21:09:49+07	SMA Negeri 03 Ilir Kota	Jl. SMA Ilir Kota 3	SMA/SMK/MA	890	0.12770046445395156	110.60128011718128	1	5	2026-05-26 21:09:49+07	3	40	\N	\N
+61	2026-07-21 12:00:55.386332+07	SD Negeri 01 Sanggau	Jl. Jenderal Sudirman No. 45, Sanggau	SD/MI	356	0.119521	110.597245	1	4	2026-07-21 12:00:55+07	3	41	\N	\N
+62	2026-07-21 12:06:22.921026+07	SD Negeri 01 Sanggau	Jl. Jenderal Sudirman No. 45, Sanggau	SD/MI	356	0.119521	110.597245	1	4	2026-07-21 12:06:23+07	3	41	93	\N
 \.
 
 
@@ -349,6 +372,7 @@ COPY public.posyandu (id, created_at, updated_at, sppg_id, nama, alamat, latitud
 3	2026-05-26 21:09:20+07	2026-05-26 21:09:20+07	4	Posyandu Bersama IIS	Jl. Melati Bunutm	0.1268353398297325	110.5690282709128	85	18	8	3	164	\N	0	\N
 4	2026-05-26 21:09:20+07	2026-05-26 21:09:20+07	4	Posyandu Mawar Bunut	Jl. Mawar Bunut	0.1215	110.5806	92	21	3	3	164	\N	0	\N
 9	2026-06-01 17:29:19+07	2026-06-01 17:29:19+07	4	Posyandu Mawar	Jl. Adisucipto Km. 10	0.1268353398297325	110.5690282709128	120	24	3	3	164	\N	0	\N
+12	2026-07-21 12:16:09+07	2026-07-21 12:16:09+07	4	Posyandu Melati	Jl. Ahmad Yani No. 15, Kelurahan Ilir Kota, Sanggau	0.122357	110.602481	58	14	1	3	41	95	0	\N
 \.
 
 
@@ -357,6 +381,10 @@ COPY public.posyandu (id, created_at, updated_at, sppg_id, nama, alamat, latitud
 --
 
 COPY public.balita (penduduk_id, ibu_id, anak_ke, berat_lahir, panjang_lahir, created_at, updated_at, posyandu_id) FROM stdin;
+15	14	2	3200	49	2026-07-22 10:41:17.642412	2026-07-22 10:41:17.642412	12
+43	14	2	3200	49	2026-07-23 08:51:32.331724	2026-07-23 08:51:32.331724	12
+45	14	2	3200	49	2026-07-23 09:11:41.03258	2026-07-23 09:11:41.03258	12
+46	14	2	3200	49	2026-07-23 09:12:08.486314	2026-07-23 09:12:08.486314	12
 \.
 
 
@@ -365,6 +393,10 @@ COPY public.balita (penduduk_id, ibu_id, anak_ke, berat_lahir, panjang_lahir, cr
 --
 
 COPY public.bumil (penduduk_id, hpht, hpl, gravida, para, abortus, created_at, updated_at, posyandu_id) FROM stdin;
+16	2026-04-15	2027-01-20	2	1	0	2026-07-22 10:56:36.481141	2026-07-22 10:56:36.481141	12
+48	2026-04-15	2027-01-20	2	1	0	2026-07-23 10:04:30.922024	2026-07-23 10:04:30.922024	12
+50	2026-04-15	2027-01-20	2	1	0	2026-07-23 10:33:13.684254	2026-07-23 10:33:13.684254	12
+53	2026-07-15	2026-07-17	2	1	0	2026-07-23 10:39:31.016972	2026-07-23 10:39:31.016972	12
 \.
 
 
@@ -373,6 +405,9 @@ COPY public.bumil (penduduk_id, hpht, hpl, gravida, para, abortus, created_at, u
 --
 
 COPY public.busui (penduduk_id, tanggal_persalinan, anak_ke, asi_eksklusif, created_at, updated_at, posyandu_id) FROM stdin;
+14	2026-05-18	2	t	2026-07-22 10:38:30.578379	2026-07-22 10:38:30.578379	12
+55	2026-05-18	1	t	2026-07-23 11:22:21.800377	2026-07-23 11:22:21.800377	12
+56	2026-05-21	1	t	2026-07-23 11:22:44.432777	2026-07-23 11:22:44.432777	12
 \.
 
 
@@ -381,14 +416,14 @@ COPY public.busui (penduduk_id, tanggal_persalinan, anak_ke, asi_eksklusif, crea
 --
 
 COPY public.divisi_sppg (id, created_at, updated_at, nama, urutan) FROM stdin;
-1	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Persiapan	1
-2	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Produksi (Masak)	2
-3	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Pemorsian	3
-4	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Distribusi & Kurir	4
-5	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Pencucian Alat	5
-6	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Kebersihan	6
-7	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Keamanan (Security)	7
-8	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Asisten Lapangan (ASLAP)	8
+1	2026-07-26 21:22:28+07	2026-07-26 21:22:28+07	Persiapan	1
+2	2026-07-26 21:22:28+07	2026-07-26 21:22:28+07	Produksi (Masak)	2
+3	2026-07-26 21:22:28+07	2026-07-26 21:22:28+07	Pemorsian	3
+4	2026-07-26 21:22:28+07	2026-07-26 21:22:28+07	Distribusi & Kurir	4
+5	2026-07-26 21:22:28+07	2026-07-26 21:22:28+07	Pencucian Alat	5
+6	2026-07-26 21:22:28+07	2026-07-26 21:22:28+07	Kebersihan	6
+7	2026-07-26 21:22:28+07	2026-07-26 21:22:28+07	Keamanan (Security)	7
+8	2026-07-26 21:22:28+07	2026-07-26 21:22:28+07	Asisten Lapangan (ASLAP)	8
 \.
 
 
@@ -420,22 +455,17 @@ COPY public.pedagang_lokal (id, nama, alamat, no_hp, longitude, latitude, jenis_
 2	UD Berkah Tani	Jl. Pangeran Mas	081234567802	110.597635	0.122584	Beras	5	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
 3	Segar Abadi	Jl. Sutan Syahrir	081234567803	110.599041	0.123867	Buah	7	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
 4	Sumber Pangan	Jl. H. Agus Salim	081234567804	110.596882	0.122963	Telur	8	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
-5	Toko Makmur	Jl. A. Yani	081234567805	110.598473	0.123488	Daging Ayam	14	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
 6	Mitra Sayuran	Jl. Kartini	081234567806	110.597944	0.123952	Sayur	15	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
-7	Tani Sejahtera	Jl. Diponegoro	081234567807	110.598281	0.124172	Cabai	16	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
-8	Berkah Buah	Jl. Gusti Hamzah	081234567808	110.598735	0.122817	Buah	17	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
 9	Sembako Jaya	Jl. RE. Martadinata	081234567809	110.597421	0.123247	Sembako	18	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
 10	CV Pangan Nusantara	Jl. Dr. Wahidin	081234567810	110.598642	0.124426	Beras	4	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
 11	Toko Rizki	Jl. Pangsuma	081234567811	110.598986	0.123015	Ikan	5	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
 12	Sentra Telur	Jl. Seroja	081234567812	110.597928	0.122701	Telur	7	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
 13	UD Karya Tani	Jl. Anggrek	081234567813	110.596995	0.123791	Sayur	8	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
-14	Fresh Market	Jl. Dahlia	081234567814	110.599212	0.124083	Buah	14	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
 15	Pangan Lestari	Jl. Kenanga	081234567815	110.597708	0.123602	Beras	15	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
-16	Sumber Rezeki	Jl. Flamboyan	081234567816	110.598152	0.122925	Daging Sapi	16	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
-17	Maju Bersama	Jl. Cempaka	081234567817	110.597551	0.12431	Susu	17	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
 18	Panen Segar	Jl. Merdeka	081234567818	110.599366	0.123174	Sayur	18	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
 19	Toko Harapan	Jl. Bhayangkara	081234567819	110.598561	0.122536	Bawang	5	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
 20	UD Sukses Mandiri	Jl. Veteran	081234567820	110.598008	0.123726	Minyak Goreng	7	2026-07-09 13:02:08.061589+07	2026-07-09 13:02:08.061589+07	1
+23	Diperbaiki	ttt	0812121212	110.59872150421143	0.12303819736758556	asasasas	5	2026-07-15 09:49:00.583223+07	2026-07-15 09:49:00.583223+07	2
 \.
 
 
@@ -481,6 +511,26 @@ COPY public.pengeluaran_harian (id, alokasi_harian_id, produk, jumlah, satuan, h
 18	7	Susu Segar	50	Liter	30000	2026-06-24 13:55:48.341142	2026-06-24 13:55:48.341142	\N	\N
 19	7	Pepaya	40	Kg	8000	2026-06-24 13:56:14.362097	2026-06-24 13:56:14.362097	\N	\N
 20	7	Bumbu	50	Paket	10000	2026-06-24 13:57:18.797557	2026-06-24 13:57:18.797557	\N	\N
+21	9	Beras Cap Tupai	90	kg	4000	2026-07-13 21:13:51.076286	2026-07-13 21:13:51.076286	\N	Test
+24	10	Sayur Kacang	10	kg	5000	2026-07-14 10:46:02.569657	2026-07-14 10:46:02.569657	6	
+25	10	Tepung Terigu	10	kg	15000	2026-07-14 10:54:21.572227	2026-07-14 10:54:21.572227	\N	Kue Store
+26	10	Tepung Maizena	8	kg	12000	2026-07-14 10:54:54.507816	2026-07-14 10:54:54.507816	9	
+27	10	Ikan Tenggiri	8	kg	30000	2026-07-14 11:00:27.514315	2026-07-14 11:00:27.514315	11	
+28	10	Beras Cap Tupai	9	kg	8000	2026-07-14 11:21:41.843831	2026-07-14 11:21:41.843831	1	
+29	10	Beras Cap Tupai	9	kg	8000	2026-07-14 11:23:44.378349	2026-07-14 11:23:44.378349	1	
+30	10	Beras Cap Tupai	9	kg	8000	2026-07-14 11:24:10.00777	2026-07-14 11:24:10.00777	1	
+31	10	Beras Cap Tupai	9	kg	8000	2026-07-14 11:26:28.256238	2026-07-14 11:26:28.256238	1	
+32	10	Beras Cap Tupai	9	kg	8000	2026-07-14 11:27:30.794861	2026-07-14 11:27:30.794861	1	
+64	10	Tepung Terigu	2	kg	2000	2026-07-14 12:05:28.156559	2026-07-14 12:05:28.156559	13	
+65	10	Tepung Terigu	2	kg	2000	2026-07-14 12:09:28.385249	2026-07-14 12:09:28.385249	3	
+66	10	Sayur Kacang	8	kg	90000	2026-07-14 12:32:35.677475	2026-07-14 12:32:35.677475	10	
+67	10	Beras Cap Tupai	9	kg	90000	2026-07-14 12:33:16.211499	2026-07-14 12:33:16.211499	2	
+68	10	Ikan Tenggiri	9	kg	90000	2026-07-14 12:35:01.415885	2026-07-14 12:35:01.415885	11	
+69	10	Bawang Merah	9	kg	90000	2026-07-14 12:40:23.457994	2026-07-14 12:40:23.457994	19	
+70	12	Beras	20	Liter	18000	2026-07-23 13:08:06.20561	2026-07-23 13:08:06.20561	2	
+71	13	Beras	15	Liter	20000	2026-07-23 13:13:49.243687	2026-07-23 13:13:49.243687	2	
+72	13	Bumbu Nasgor	60	Paket	10000	2026-07-23 13:14:27.015758	2026-07-23 13:14:27.015758	9	
+73	13	Bawang Putih & Merah	8	Kg	25000	2026-07-23 13:15:03.875496	2026-07-23 13:15:03.875496	9	
 \.
 
 
@@ -645,6 +695,10 @@ COPY public.pengiriman (id, created_at, sppg_id, driver_id, tujuan_type, tujuan_
 172	2026-07-07 13:22:03.658722+07	5	7	sekolah	42	sampai	2026-07-07 13:29:52.927269+07	2026-07-07 13:42:24.876372+07	3
 173	2026-07-07 13:22:03.658722+07	5	7	sekolah	43	sampai	2026-07-07 13:52:04.357582+07	2026-07-07 13:54:31.785441+07	3
 185	2026-07-07 13:22:03.658722+07	5	\N	posyandu	8	menunggu	\N	\N	1
+186	2026-07-23 13:39:26.251812+07	5	\N	sekolah	44	menunggu	\N	\N	1
+187	2026-07-23 13:46:21.883089+07	4	8	sekolah	32	sampai	2026-07-23 13:46:43.545413+07	2026-07-23 14:02:48.290731+07	3
+189	2026-07-23 14:31:08.237965+07	4	\N	posyandu	3	menunggu	\N	\N	1
+188	2026-07-23 14:31:08.237965+07	4	8	sekolah	61	sampai	2026-07-23 14:31:28.856662+07	2026-07-23 14:33:07.033179+07	3
 \.
 
 
@@ -653,6 +707,12 @@ COPY public.pengiriman (id, created_at, sppg_id, driver_id, tujuan_type, tujuan_
 --
 
 COPY public.pengukuran_anak (id, penduduk_id, tanggal, umur_bulan, berat_badan, tinggi_badan, catatan, created_at, updated_at, version) FROM stdin;
+1	15	2026-07-23	23	11.80	85.50	Anak aktif, nafsu makan baik.	2026-07-23 16:19:01.286096	2026-07-23 16:19:01.286096	1
+2	15	2026-07-23	23	11.80	85.50	Anak aktif, nafsu makan baik.	2026-07-23 16:21:20.31855	2026-07-23 16:21:20.31855	1
+3	15	2026-07-23	23	11.80	85.50	Anak aktif, nafsu makan baik.	2026-07-23 16:21:43.269549	2026-07-23 16:21:43.269549	1
+4	15	2026-07-23	23	11.80	85.50	Anak aktif, nafsu makan baik.	2026-07-24 08:06:13.757215	2026-07-24 08:06:13.757215	1
+5	4	2026-07-23	23	11.80	85.50	Anak aktif, nafsu makan baik.	2026-07-24 08:10:33.003299	2026-07-24 08:10:33.003299	1
+6	31	2026-07-23	23	11.80	85.50	Anak aktif, nafsu makan baik.	2026-07-24 17:02:45.047456	2026-07-24 17:02:45.047456	1
 \.
 
 
@@ -661,6 +721,9 @@ COPY public.pengukuran_anak (id, penduduk_id, tanggal, umur_bulan, berat_badan, 
 --
 
 COPY public.pengukuran_balita (id, penduduk_id, tanggal, umur_bulan, berat_badan, tinggi_badan, lingkar_kepala, lila, catatan, created_at, updated_at, version) FROM stdin;
+1	15	2026-07-23	24	12.30	86.40	48.70	14.20	Perkembangan sesuai usia, anak aktif.	2026-07-23 16:40:08.374768	2026-07-23 16:40:08.374768	1
+2	15	2026-07-23	24	12.30	86.40	48.70	14.20	Perkembangan sesuai usia, anak aktif.	2026-07-23 16:47:28.231674	2026-07-23 16:47:28.231674	1
+3	43	2026-07-23	24	12.30	86.40	48.70	14.20	Perkembangan sesuai usia, anak aktif.	2026-07-24 08:23:06.77899	2026-07-24 08:23:06.77899	1
 \.
 
 
@@ -669,6 +732,8 @@ COPY public.pengukuran_balita (id, penduduk_id, tanggal, umur_bulan, berat_badan
 --
 
 COPY public.pengukuran_bumil (id, penduduk_id, tanggal, usia_kehamilan_minggu, berat_badan, tinggi_badan, lila, hemoglobin, tekanan_darah_sistolik, tekanan_darah_diastolik, catatan, created_at, updated_at, version) FROM stdin;
+1	16	2026-07-23	24	58.50	158.00	26.80	12.30	110	70	Kehamilan normal, ibu dan janin dalam kondisi baik.	2026-07-23 17:31:11.049933	2026-07-23 17:31:11.049933	1
+2	16	2026-07-23	24	58.50	158.00	26.80	12.30	110	70	Kehamilan normal, ibu dan janin dalam kondisi baik.	2026-07-24 08:21:53.629034	2026-07-24 08:21:53.629034	1
 \.
 
 
@@ -677,6 +742,9 @@ COPY public.pengukuran_bumil (id, penduduk_id, tanggal, usia_kehamilan_minggu, b
 --
 
 COPY public.pengukuran_busui (id, penduduk_id, tanggal, berat_badan, tinggi_badan, lila, hemoglobin, catatan, created_at, updated_at, version) FROM stdin;
+1	14	2026-07-23	58.40	158.20	27.80	12.60	Kondisi ibu baik, menyusui eksklusif.	2026-07-23 17:16:50.109652	2026-07-23 17:16:50.109652	1
+2	14	2026-07-23	58.40	158.20	27.80	12.60	Kondisi ibu baik, menyusui eksklusif.	2026-07-24 08:19:19.29954	2026-07-24 08:19:19.29954	1
+3	14	2026-07-23	58.40	158.20	27.80	12.60	Kondisi ibu baik, menyusui eksklusif.	2026-07-24 08:19:36.463909	2026-07-24 08:19:36.463909	1
 \.
 
 
@@ -695,6 +763,12 @@ COPY public.permissions (id, code) FROM stdin;
 --
 
 COPY public.peserta_didik (penduduk_id, sekolah_id, nisn, kelas, rombel, status_aktif) FROM stdin;
+4	62	1234567890	5	5A	t
+10	62	1234567891	5	5A	t
+19	62	1234567892	5	5A	t
+31	62	1234567899	5	5A	t
+37	62	1234567895	5	5A	t
+41	62	1234567894	5	5A	t
 \.
 
 
@@ -706,6 +780,8 @@ COPY public.produksi_harian (id, sppg_id, tanggal, waktu_mulai, estimasi_waktu_s
 1	5	2026-06-21	2026-06-21 04:30:00	2026-06-21 16:50:00	2026-06-21 01:45:06.052462	2026-06-21 21:43:40.328191
 2	4	2026-06-24	2026-06-24 04:00:00	2026-06-24 10:00:00	2026-06-24 13:53:49.193408	2026-06-24 13:53:49.193408
 3	5	2026-07-09	2026-07-09 00:00:00	2026-07-09 20:00:00	2026-07-09 12:38:51.488063	2026-07-09 12:38:51.488063
+4	4	2026-07-23	2026-07-23 12:00:00	2026-07-23 13:00:00	2026-07-23 13:08:50.907423	2026-07-23 13:08:50.907423
+5	5	2026-07-23	2026-07-23 04:00:00	2026-07-23 08:00:00	2026-07-23 13:15:24.523848	2026-07-23 13:15:39.479803
 \.
 
 
@@ -723,6 +799,8 @@ COPY public.schema_migrations (version, dirty) FROM stdin;
 --
 
 COPY public.sppg_divisi (id, created_at, updated_at, sppg_id, divisi_id, jumlah_sdm, version) FROM stdin;
+1	2026-07-26 22:10:20+07	2026-07-26 22:10:20+07	5	1	144	1
+5	2026-07-26 22:19:09+07	2026-07-26 22:19:09+07	5	2	20	1
 \.
 
 
@@ -731,184 +809,7 @@ COPY public.sppg_divisi (id, created_at, updated_at, sppg_id, divisi_id, jumlah_
 --
 
 COPY public.tokens (hash, user_id, expiry, scope) FROM stdin;
-\\xa1e0969152d79cfb00adcc941cbcc77193460157408005b873bdf84deda67b01	34	2026-06-15 20:53:23+07	authentication
-\\xcf993408774a91aa4c4478b0f7f875d49640396cfa2ad533f34c8f31c7bc94c3	46	2026-06-19 13:37:54+07	authentication
-\\xf936103de68fb07de615a8cdfa3ac7dddafbf9c0aeab809c9b10732708a9d624	34	2026-06-19 13:38:41+07	authentication
-\\xd1f6462471a9251136f44488f91a5e78e41ab2da8e42759b281696f554037337	46	2026-06-19 14:29:41+07	authentication
-\\x9fda2e6059eacfe3c00b96bb35c779cb69e6ce085339fdd678bf1221bdfb2628	37	2026-06-19 14:29:54+07	authentication
-\\x26aad3564eebe838851555937764477e1cc0fed16cad8314b76959e58fe1d1db	46	2026-06-19 14:30:46+07	authentication
-\\x5b976de886b06b16d66e9d83f280f04b19221320dcd9515871b519d558b4955e	46	2026-06-20 19:04:40+07	authentication
-\\x077628652c3c133946cf752fc417b797ac8216c7ea56bcf4f4970911cc9e481f	39	2026-06-20 19:06:32+07	authentication
-\\x3f32ad17ad49882a220c8e7bc2ca51b829f6c3d9a2a691a5e88b27561c9e025e	46	2026-06-20 21:56:16+07	authentication
-\\x001988b43197a84411ceecaea7884b68bc6d35b60918220e77a3bc580163d02d	46	2026-06-20 22:08:55+07	authentication
-\\xf5228b112a609d4fbe9671f455787d0d48ebf3fdd75b8f1db6cce0152d2b9e56	34	2026-06-21 17:51:53+07	authentication
-\\xab60c7ca064c004d8cfcb897f03d1931016cb3eb8a1e3369047d8bda2123e12d	39	2026-06-01 20:58:34+07	authentication
-\\x29a3cad66f6149db5f7c4c649d63313c9719818ae12a291da5fd879c471ac0fc	39	2026-06-21 19:47:45+07	authentication
-\\xf4c7478e0e3ce5c301ad63def2968a3461bff8f31cbe57908e11849b5fd3d81b	34	2026-06-21 23:36:18+07	authentication
-\\xf0d5a8b95015b2246ddc2bc00174f8ac5518bb2d005d66b4bad1fc4eed50b8d8	34	2026-06-21 23:58:40+07	authentication
-\\x5bafded432ab377aadfa80705d52bc71779da80691e4bd5e85b23e922ba2746d	46	2026-06-22 00:26:00+07	authentication
-\\xea7710df0656ea28e0adfe456cfc4db14ac6666a26862aad453a7a717c8f9942	39	2026-06-22 11:00:11+07	authentication
-\\x20fa82dac79722bd3de5d02f41ab48842cf5997328ff6bff6562a0020f426235	34	2026-06-24 17:21:30+07	authentication
-\\xc5f83f97067c71efc095ae83698da5c31a925b055281917a7fb366fdf86c3923	37	2026-06-25 10:36:55+07	authentication
-\\xde9ae87bc80d3e1eaaecf708328951f3816eb28f2e0c0a9f7f129ecb5945363f	37	2026-06-25 13:13:12+07	authentication
-\\xcc9b9afca5e3d7c4e9f6d3455736da053b1eba65cece4d003c159969027083f7	34	2026-06-25 13:42:20+07	authentication
-\\x40848f1873bddd5d54a1dd5023ef7b8052a8186b93df56ae97d4aa77cf7f931f	46	2026-06-25 13:58:08+07	authentication
-\\x45030a38308002a4691634c78f2ae2eeb9c49990f44b74a2a70826e84f2d5b56	47	2026-06-25 13:58:20+07	authentication
-\\x47528023bd9e1285a9ea4b62bd924cb52fbfbb6d1bf527e17e43e0611651257c	47	2026-06-25 14:10:56+07	authentication
-\\xbe9819b1c871b9e6da86d4f696e2ede7727ba193554aaf4df2ae9f23acc6edc0	34	2026-06-25 14:26:37+07	authentication
-\\xd3997159a772a552bb6fe848651bdf05dfc8329f76c8738a62eea5e13b7a5d92	37	2026-06-25 14:27:00+07	authentication
-\\x53444f9ef16de731a5fae500e3bbd12c1a3c8f441e8b4816b54756518e799a71	37	2026-06-26 00:58:12+07	authentication
-\\x819f2e43a39f9b023553534972611da106279bd2e542ac49532bc8b12be62cb1	37	2026-06-27 23:44:13+07	authentication
-\\xa094a1f00c3a70e0fa32dd5da6611edae7fa6eaf1e5eb099eb123350813f4b31	87	2026-07-04 10:00:37+07	authentication
-\\xf0ef3ba14fe134122a216a998e14af488e47c163b3c0752fcc87872a9554fd1e	37	2026-07-05 01:21:28+07	authentication
-\\x4f8e8cd288df4a9b40c55190716fc07c29eeb0b3ec2404c1a2775be08a711b0d	48	2026-06-04 09:22:42+07	activation
-\\x78928e71055e009458daf0a5d001a95f36c6724b1541488148addcde2027ae9e	37	2026-06-02 10:44:53+07	authentication
-\\x2e1b963cfb5ed9cbb96b4d1a835809d9cfd14eb0df95f612cd632ecda6351a05	34	2026-06-02 11:38:02+07	authentication
-\\xb8485a7a0947246f2b612999418a1b949155da86c3ed0c060a30dcaebb0eabee	34	2026-06-02 12:41:08+07	authentication
-\\x7ef90f7536cfb8bbb99fd615152e6b8278c5ec3d989af732540f12da331b2bf8	34	2026-06-02 12:41:26+07	authentication
-\\x26c20af85669325c6d1e5d8e9d963fed26df5ef76277468571e05c6ca1462759	34	2026-06-03 13:29:51+07	authentication
-\\x1920e571ecd29109233cd3404c60dac87ea642a71253de99042585235710afe2	39	2026-06-03 18:38:32+07	authentication
-\\x665fb135fbd6b186ce07a1c157bfeaea2f95bdac3445bbb447ebac089a449f78	34	2026-06-03 18:39:08+07	authentication
-\\x712e040b3b8d2c9290792978a30fe100ca5188cb246b8bbe680ad88de6cc3377	39	2026-06-03 18:39:56+07	authentication
-\\xefbb5e47929ad8047bfc732b3e12d30b5d9fc099c0aea92b298d353a8b77c96e	34	2026-06-04 09:59:32+07	authentication
-\\x329c6e72c4c65b509f1845d95b2ed8a77e208f0948fcb24fe2698260fb4c5e39	39	2026-06-04 10:01:12+07	authentication
-\\x03fcff1b12f9fdbc281162fece1be5a945e4b3d058efa5fc487f928caf039e59	39	2026-06-04 18:48:11+07	authentication
-\\xdc230d0537820bc3feaeec5ed5e58cd3f47df994d5c3ce5cf38f2869b7a1e116	39	2026-06-04 20:30:01+07	authentication
-\\x1b85e23c297fbfa096612053b54d4eaee626b3abd766c0b02e96fb78135885bb	34	2026-06-04 20:34:45+07	authentication
-\\x6616af99a5b1f5fbc29a05bcaa6ab9a1cd20b0a5bb41cb638324c963d3a8fccb	39	2026-06-04 20:35:42+07	authentication
-\\xa906cf026b30b4b943a674cddd8a098b9a759bf31fb36027c53538672e85a2ad	34	2026-06-04 21:19:20+07	authentication
-\\x9be54991264620393c8f76e24617bf5726e1674bf9e3eaac45e23bab85489dea	47	2026-06-04 22:43:37+07	authentication
-\\x26189b8ac51cca9af8fe338178fa641e5da03166e95f8a81c4b654b04d6b07cf	34	2026-06-05 02:08:46+07	authentication
-\\xc212aff3bff8175280709587a86f6eef7154b07c13d5bd27c82e2e27d8c7021f	39	2026-06-05 02:09:02+07	authentication
-\\xb23d757995e3467300d20f395794cf84bbb130f828d2d90a70f76235c77d455d	34	2026-06-05 10:55:46+07	authentication
-\\x293f242abaa199583fd6d28ce0f8789db5fc9b9f11741952b412e7031a3705a5	34	2026-06-05 10:56:52+07	authentication
-\\xad56a9551df20bf5d22899e8a675b11edc2cccf0e688e4e6bb0908707271ee87	39	2026-06-05 10:57:29+07	authentication
-\\x2b145ff51dae590203fd3edd04de2ff5cdcbb6c947e5882d56e0e4cf880161d4	34	2026-06-05 11:10:35+07	authentication
-\\x797af55490ac2075e617b88e0dc5db53782f466ea49b7009b7980fc5f511f9e2	39	2026-06-05 11:12:09+07	authentication
-\\x3dfefdf469e09ad9aa19c9f46372a3b242af0ad4ff0edabdaeac2d14607f4c3c	34	2026-06-05 11:12:45+07	authentication
-\\x81fb0a0298408a4eee5dc97de56f6a8524905ddc195d3f398ed9664604a40ecc	34	2026-06-05 11:14:48+07	authentication
-\\x19dd5a98ddb21cbadfa8c99389ae359634edcaf4d935f7149b4fb28fd3807477	39	2026-06-05 11:14:59+07	authentication
-\\xd76abd957f8ff1e4b435f7766c68636110810ba672e8f6d6cb5488fcab29417d	34	2026-06-06 11:50:19+07	authentication
-\\x230518601c9c0f96be4ae6913d51f2574a198a3008940a9caa10b8dad78fc337	39	2026-06-06 11:51:01+07	authentication
-\\xfd049dc10bc817a98141d39f3bee9b2f4069ba59838ac85efc6ee20865e32ebc	34	2026-06-06 17:29:15+07	authentication
-\\x11175729a79e7dd3c6ba23e37c6610551d6a0801944975d2df85f44ab3cbf56f	39	2026-06-06 17:30:26+07	authentication
-\\xd46efa172780e29a059d9f46ee60c00d7c2b2d7fd7c4a4e3e11589e3d0a6ebad	34	2026-06-06 23:52:58+07	authentication
-\\xe220b6cc9f8d98c02ec05c30261ad16440a6b870abbf2a0da60235ecdabacd4c	39	2026-06-06 23:59:15+07	authentication
-\\xbca623a205994ada917a202a7b6d8534a6bf72ebdd56d071506b580c3c6bd8f3	39	2026-06-07 00:13:08+07	authentication
-\\x024d80790840a39300811b0c2be1ca3ed845055ce1bee0dfde40fbee22a42a12	39	2026-06-07 00:23:04+07	authentication
-\\xfc2d7e8fc1e1a8f19f1c460f7804dea3b8e098a1630f5e27ec29d7ad3633e15f	39	2026-06-07 09:24:40+07	authentication
-\\x7debb1823466dd14c2111b46dec1a03b6884dc9b205254f94ad0e069cb033c28	39	2026-06-07 10:16:31+07	authentication
-\\x1de22be5fc6e7c151c7054279e14f2587a2c2080bf876c3b04f0776032bc2308	34	2026-06-07 12:02:25+07	authentication
-\\x99a420e6bd3fcd2750e7f2537cb40f8be89357d48f450382c65565e0a7ddfb80	39	2026-06-07 15:42:25+07	authentication
-\\x441e131e4ccf589be94d9357510efd07f158f698ad585f3c3081408ec47893c2	39	2026-06-07 15:59:56+07	authentication
-\\x19180ebc90a5f97caf457fbca0a959f725b6056f85a9c7b85731ac3549ec477f	47	2026-06-07 19:04:17+07	authentication
-\\x5147f26bb41952ad561b307d059ff36cdcc51c1d90c33b0e2bcaeba0fe3f2144	34	2026-06-07 19:04:44+07	authentication
-\\x5afd97277be92b7d653f1369b2cf83655e7097a1f03c74904dd96f6c9b00f7b1	47	2026-06-07 20:04:07+07	authentication
-\\xdedcc0ddb80e8968f99d4e4e3293b9f63e917f83d3b08c3289a137384636b572	47	2026-06-07 21:12:02+07	authentication
-\\x6b5551ff8dfe4537517fd69b67f0f1967248aec560126fa1417da983c18d06b8	47	2026-06-07 21:38:45+07	authentication
-\\x233acda193dea7064b47838e038009beedd19472969e9f4dcddbb47c9be2d481	34	2026-06-07 22:03:23+07	authentication
-\\x0d423227186deafb70677dcb3adc1b1541fc9429d688d294804cdaf32c286571	34	2026-06-07 23:30:48+07	authentication
-\\x2d8a890789ada7ba3f2e67d4243dae5727ddedddb053270d7864bde32a024e2d	39	2026-06-08 09:09:36+07	authentication
-\\xbdb9265223153d70365e0d5ee161e3d72dd729cec41563b125d318fe6e1f1fe8	34	2026-06-08 09:42:04+07	authentication
-\\x0a0d118ea953fdda807ffd93971ff807bb870160923f9f4e3aad7e880dc01a0b	47	2026-06-08 09:57:04+07	authentication
-\\x2980f7363797a86c2a1232abc962566d835a5bb8d252ae1368ac2114e11e653f	46	2026-06-15 20:42:42+07	authentication
-\\xe3557ff0c5cf42e7e1cda67daf26f70571faa8665af24598da3fd3708a888393	47	2026-06-09 16:55:01+07	authentication
-\\xfcdc6a5265f9182c1dfdf124e756f75cc5fa5479c9853114860dacf3029887a3	46	2026-06-15 20:50:29+07	authentication
-\\x790302349113c79fb76c9ff029bd5abd4ee171ed1dffebd2b6cff7fa759ea8d7	39	2026-06-15 20:56:39+07	authentication
-\\x72ee5f31e50e79ce5317eca048e164d47ecedd676a61ee83736d8206923f72f5	37	2026-06-11 15:55:20+07	authentication
-\\x9e085449ca6e5d906a6956c6512dff2047fb41d54247d0ee13eb67d4957005bb	34	2026-06-11 15:56:45+07	authentication
-\\xfa56755c2c7af32fd0f5481eeb8dffe1ac93f4be5d58a29769aae7600b47c332	48	2026-06-11 15:57:00+07	authentication
-\\x4138114009221c819b46b9c95b7eccb709796ca3790745889564efbaca39bd13	46	2026-06-15 21:02:20+07	authentication
-\\x540c1d994687ef9546ae4a3f333688af322158df93c8dcc5e07d65bf1d0c73f9	37	2026-06-11 15:57:14+07	authentication
-\\x6a90106a8c0fa47ded6db444c55e6256b77b3bd089b60e1df26f822d93af3140	34	2026-06-11 15:58:33+07	authentication
-\\x02ddb9fe17788a557868d3b2d69e5dbb7ed6b82b07b68ceea19f6a8a25836f4a	39	2026-06-11 16:49:32+07	authentication
-\\x9915fc43023638ea7347feec43c83c2450cd60ca2df90abec6a8880d3bfaf9be	47	2026-06-11 16:54:36+07	authentication
-\\xeff2a4077c39e45cb8bb7a416ed6863b8505b6ba1034a616d8868a526efef425	46	2026-06-15 21:08:14+07	authentication
-\\xc2f0275099f64907e389719a1df64ee66112be7f1fffee8efcb01da6bb0456f6	46	2026-06-15 22:31:55+07	authentication
-\\x92055ab51de6c97c60f6dd17ec4f37411b300bc94bfcc4a27ab0f782b673e20b	39	2026-06-12 17:48:27+07	authentication
-\\xde15327aca5caf8c95de0e9f4d5b8a6b8f0e1515785e745481426fa8fb7b7ff8	39	2026-06-13 19:45:39+07	authentication
-\\x9506d233a1025a8cadea6cd7654f3a09028378d06032d10829ea51631bd5ebd1	47	2026-06-19 13:36:44+07	authentication
-\\x9a063d490ac97e89b0a9b1dcc4e592594bdadaaa987675b668981865c6a04c05	34	2026-06-19 13:37:15+07	authentication
-\\xe00cd0f44c23212593887cda9f4116e39654ec3531176e6ea01d73c4b8583573	34	2026-06-19 13:48:31+07	authentication
-\\x5a315aa6fc21fdde377b346cd97f6a2d24b64402a3d2d73dc10049628e1ee7c0	48	2026-06-19 14:30:11+07	authentication
-\\xb20d1bb9150be1c1d24969f50d8e39466e88e8330480e7bc7bec637b7f442791	34	2026-06-19 14:30:20+07	authentication
-\\x7cc4268ab2a56e66d8da50128db09f3df599f00fd690a8fb91d6f33fa8073792	34	2026-06-19 22:58:08+07	authentication
-\\x3edc51f4683338fc2eb06557cb3b46c613a5c2950fda8e1b8c147a25f70a4a53	34	2026-06-20 16:56:47+07	authentication
-\\x27a122245ac470070431c5ed80db8cef1b7fd68b0fb91e87f91ba77afe9e7ba6	34	2026-06-20 20:36:49+07	authentication
-\\x1cad1797b62b154691c3fb93993b70a8cd5c6610b57bbb1ab7f35873ce93d878	34	2026-06-20 22:07:36+07	authentication
-\\xd4ec66782f525d43ec63ece11d5379e6d3f423c1683d79c3b8afc521a17995c9	39	2026-06-21 19:21:44+07	authentication
-\\xb3af1220c4084eabf0fe507a87d90c0fc58673d5cf8c439a44c9b1168380d541	46	2026-06-21 23:35:45+07	authentication
-\\xd8ace24de529304a7b10dc147574f57079a9bab5b9906690544a37887dd3a12d	46	2026-06-21 23:37:19+07	authentication
-\\xb2f334ff6a646d4b5bf3f1c6376933cdc0557f13372529c7987b63969c5a37b4	34	2026-06-22 00:28:50+07	authentication
-\\xb5852d9277e3281be90f29b5d9cd3cf3a3951e0476cbb3451370e030b7e6ab4f	34	2026-06-22 09:40:26+07	authentication
-\\x6fe0dc325f7f137129977c09aad6cf94dd7bafd871aae9dbe1e57d59a8b869a0	39	2026-06-22 12:48:43+07	authentication
-\\xf0b6d9ec55e84a7fc19feac44e1cebbff979003ad7b6cee47786cae227893631	37	2026-06-24 10:20:03+07	authentication
-\\x327dbdcf0faad6df6f72e721c4c72ce1fe3166be6b9bc8042162790beabbf3ed	46	2026-06-24 22:20:04+07	authentication
-\\x5515fa032867e2bfa50bdab7353e3891f10b95ca82993ef3a439c0e062bfb68b	34	2026-06-24 22:20:13+07	authentication
-\\xf20d57ac8e0ab966333d538f962e3753582815363e7fab9b5de8dee584fde55a	34	2026-06-25 10:36:47+07	authentication
-\\xad824f273534f640547a3ec312bbe94f9057fb16026445ac306ca59f46bc1146	34	2026-06-25 13:11:16+07	authentication
-\\x52baa4da34cbd3911b4ac83d311c9a1a6e159c4b2a57d1ac2df5d150e3e84e44	34	2026-06-25 13:14:30+07	authentication
-\\x1e0063577f6baf114aa47e49f5ae670290ea0becf7e1cae6f963e7865d74ff53	37	2026-06-25 13:16:01+07	authentication
-\\x233160fe24ac61e68614eec9b22d3623a68b0dc667975a8814ec82191614c349	34	2026-06-25 13:44:03+07	authentication
-\\x1491167784946529e2abe10a947e7db4c7c032cc4b043abbd5f7bc32023ea6bf	37	2026-06-25 13:44:08+07	authentication
-\\x520315ea2b34bbd7ee0c793c696ef1adb76231403136d72d12470351f082f48d	34	2026-06-25 13:59:57+07	authentication
-\\x540b0290bb4ee3d5d6ded1185c71f23d48334b7a7d5e18c11857cdfb289f7ad9	47	2026-06-25 14:00:54+07	authentication
-\\x26b761dac1631f5d7bd8f064adb95e7fcdd5bf7fb750d4a0897807dd237d9d95	34	2026-06-25 14:01:08+07	authentication
-\\x2a472902ab1e10ba0d750501e39475f9a30195d154f5f3374e5ace6f5be1a894	46	2026-06-25 14:01:38+07	authentication
-\\x25b31e17f21c8db007e716aae9862a2aa042158f3fb19f44ec76b82a9e1dec9a	47	2026-06-25 14:01:45+07	authentication
-\\x79dc0dbb454ac9ebe1c2d0d6781f48d3c484b86a42d900c039f9f64a2c13d6c7	34	2026-06-25 14:10:33+07	authentication
-\\xb21e6c6051f708b29532fec1f92064f478072b1b4c69a9693f28c9bc02f7f7af	34	2026-06-25 14:17:41+07	authentication
-\\x422c1d48bd2f92826215a0d9305206b5c3fe16f303d491a54ae1cc2bf3bc8e6e	37	2026-06-26 00:58:59+07	authentication
-\\x394678daed65ceacdc2a751a764ee42cbb7b5033f23c1eb22365777782131cef	37	2026-06-26 22:57:22+07	authentication
-\\xb414042cfec46039ebe20ad250830b832110da370a2cfad9013cdb0f16708d39	72	2026-06-27 22:01:12+07	authentication
-\\x167b8bee45ced605f96f554ac9f8ab9c5e4c200441fe311ff485a675447e0ab6	37	2026-07-03 17:07:11+07	authentication
-\\x38561e59528756c0d5f2a7f1d1752199fc3a8e90796ef0a0c1655797f51ddd3f	37	2026-07-04 10:06:35+07	authentication
-\\x4b4dccc64b60f2e0a1afd7724a0c9ad3c6c2a33fbbea0e73293110260ce3f4aa	37	2026-07-05 21:54:25+07	authentication
-\\xfde4c434be5c33f4d389523ea87d7b0d66e24739a29addc94b6fb0f2fb13cae8	37	2026-07-05 22:45:08+07	authentication
-\\x0357762a44cb792dc96e722327a595176981637387abf01ad61dd8e5bd238f3c	37	2026-07-06 17:55:47+07	authentication
-\\x2bea4a34c59ab229dd125bfaddb4b2eb742314f9591c2f9a4407f8bef24ad47e	37	2026-07-06 17:58:17+07	authentication
-\\xccc0efc5df0cf7682ee1bbff805c4a44824a6b6dc0222df5265975b0204ef214	37	2026-07-05 18:26:42+07	authentication
-\\xc2f25194028d1af039fb00a50bc69004ed5f839a8a040572f17715074680481d	37	2026-07-05 18:30:42+07	authentication
-\\x65f510db168a088f52688bbbf19f8728a7d7a8c4d4ef7afd2e46a2b38a0aaee8	37	2026-07-05 18:55:14+07	authentication
-\\x4b763bcd43b31f518ddc7749f2db4908e5cb88dc11df990125d491b7f004c907	37	2026-07-05 19:06:42+07	authentication
-\\x44ec117c70eabf6b5a657074f6874daa46fce61b7fa154e7656f2a02c3fb6e23	37	2026-07-05 22:09:32+07	authentication
-\\x9b4e60d48ceb39c5f6bc9e7fe31bf9abc57b96fc862b833b0921723d8e5e344e	37	2026-07-05 22:14:23+07	authentication
-\\x08970c4006738a3fd13bdedd7a6ebac66f4df4d3e2b7ecd8330de70536b076ad	34	2026-07-05 22:14:40+07	authentication
-\\x6f37cfe5a2a51685bf2e6e4359635344d4617a3aa27a7d7f64d3f2ef9b90b983	37	2026-07-05 22:18:45+07	authentication
-\\x4dd50368d0ed399412b0df82375f76138195d97dfa8fb394fb8f8e8072b11cc1	34	2026-07-05 22:19:46+07	authentication
-\\xb72d595ca13141ef52d60a3c4941dadc878bf90a9fbcbddf49769186765c1b07	46	2026-07-05 22:20:20+07	authentication
-\\x9f0aeaab99f7ef1b2ec356b924d6dcbe0e0f039be65837f824e07769e56a93d3	47	2026-07-05 22:21:51+07	authentication
-\\x31a060f66f6c6ad81768057b0872778bb22e8e72198d88bdd4dfdaff5fc5401a	34	2026-07-05 22:22:08+07	authentication
-\\x184314282bc99335e5109b9db4eef198ceb6c1f8a327224a29fedaf26800905c	39	2026-07-05 22:23:50+07	authentication
-\\x9c6b253159ee9005e7fa372a96f84a68717ecbd97e97b90d694bc99e70695ff9	34	2026-07-05 22:24:23+07	authentication
-\\x99fe9520735f324eebbe85fc1facc04a9d6607501469d47d48c079b269982fc1	47	2026-07-05 22:24:32+07	authentication
-\\xbe7fcf832b41fbe72084cf91787d37020fe897c4a135244688940d2da9fd200f	34	2026-07-05 22:24:45+07	authentication
-\\x5be709a5781135946312bd55c87bf1892e93a78bc4fd1a5bd7e4f706aa7ce006	39	2026-07-05 22:24:50+07	authentication
-\\xd2a3643fab99a470495f4fc975ff47f6909fa87d4b95ebfdcd6a53fadc28a602	34	2026-07-05 22:24:58+07	authentication
-\\x10ad1a261fe22dd6b5efef30cb52fbedb1f5cb7864d0ac524940dd07cd10e420	37	2026-07-05 22:25:43+07	authentication
-\\x094015a53bf797f4fead164468a4c5d8cef2f8ba74002abbe7b071123e5481d3	47	2026-07-05 22:26:03+07	authentication
-\\xc639c3b67b4c7ec22a9428e4b952540755026b276c05159b997bd4e167253fdc	37	2026-07-06 22:28:57+07	authentication
-\\xf2903869274735c5cdf7da188b7f7d646a192e067c163e029921648948cb0fec	46	2026-07-06 22:38:26+07	authentication
-\\xebc93bdfbf77a6a630545c5c867ef816d0687ad96ad7a952f3a717f870056578	47	2026-07-06 22:38:32+07	authentication
-\\xfca3f23ee568119fa81068092664623aa60de65935dd07961800ba64130c6f8c	39	2026-07-06 22:40:00+07	authentication
-\\x2b03f69f6511f2be5e7d79ec1b7dc43e21e93dae02586438ea72cee4cdd028ca	34	2026-07-06 22:42:07+07	authentication
-\\xd531c4d8c3095b4840d5355174a0d7ae22234347449dafd7cc783af3e88340e5	37	2026-07-08 13:10:52+07	authentication
-\\x14b5054c23c5beae525cfd1504fac2803e019bc1760b990c41120d582ac3e86c	46	2026-07-08 13:21:16+07	authentication
-\\x36004fac36b146db987caf9212f172ca889f4af423085a94c40d6c24a130c100	39	2026-07-08 13:21:42+07	authentication
-\\x62ae0c54a06e0d4d6968d0cfbbc071b2c8b17568509ff06e16d49ba1d4a0e91b	46	2026-07-08 21:06:09+07	authentication
-\\xeb3836a83697ff0fb2aa7ccb697fe29ae5fce73171e5053ae2f916fc01bd6641	37	2026-07-08 21:06:51+07	authentication
-\\x30e6b7479c373954de67dc56bb117293cfec8928132ceca15aa2fd2e4ffee53b	48	2026-07-08 21:07:23+07	authentication
-\\x0fe59d77877f8cb98363240feb7d6015ef72c98d9a1dbf5efdc59235e323e0a0	39	2026-07-08 21:07:34+07	authentication
-\\x7d7da759269e5d8c214c717c361dab7dfe3e258ce3a5b63355f56a7489638c3f	39	2026-07-09 16:43:50+07	authentication
-\\xb89618ec197c5c158265b4f667d0be90da1daca014344d7608e29efff2812295	46	2026-07-10 11:27:20+07	authentication
-\\xe941a0d668af76a5545019db896eeec933594bc8e70282027d0c0c64cbb39b98	46	2026-07-10 11:51:34+07	authentication
-\\x5b68c4e4149631be1940b79c5f56bc76e9fb951490eab9310b5b7b4311b78b5f	39	2026-07-10 12:01:40+07	authentication
-\\xe60fa4418ce75598c20a51730065b13ade88f2243a31098d0df15de753aa4201	46	2026-07-10 12:02:42+07	authentication
-\\x03a7d0c16a40be38a34ad36d565312c01b3f74a95a9279aa5bacdfe7ff28dcc9	39	2026-07-13 17:10:38+07	authentication
-\\x4af0e9a0d0da1035a2ca7ef3d91d366dfc1f2d268588b0fc38787e2211bfdb08	39	2026-07-13 17:41:17+07	authentication
-\\x5e438de7e2b8898309074a8422c912fee0b6813c1438c415d0081184f5eece47	37	2026-07-13 21:11:36+07	authentication
-\\x4a82cd93d768b3db919c190f186d1d221a2942776f76047a40d8ad97d9587c11	39	2026-07-13 21:12:13+07	authentication
-\\x98fd81c3a98cb0e5f647a12b5f1289d520e8d09d6fb6713d98bed282df890dfe	46	2026-07-13 21:13:14+07	authentication
+\\xbb502ee0f490ad36298cc1548747262d4a523a0adc729acad58ff7d94e8d0a6e	39	2026-07-27 21:57:16+07	authentication
 \.
 
 
@@ -1130,6 +1031,94 @@ COPY public.tracking (id, pengiriman_id, latitude, longitude, speed, accuracy, c
 5539	175	0.1252774732805117	110.60241428602595	20	5	2026-07-09 12:11:25.446477+07
 5540	175	0.12553523830968352	110.60227251492037	20	5	2026-07-09 12:11:36.400864+07
 5541	175	0.12594766235108124	110.6020405258385	20	5	2026-07-09 12:14:24.403435+07
+5542	175	0.12338290023859251	110.60558480347815	20	5	2026-07-16 09:02:48.941071+07
+5543	175	0.12311224693583053	110.6054043675256	20	5	2026-07-16 09:02:59.146399+07
+5544	175	0.12300914091500435	110.60478572997395	20	5	2026-07-16 09:03:09.203881+07
+5545	175	0.12285448188302084	110.60408976272834	20	5	2026-07-16 09:03:19.237175+07
+5546	175	0.12275137586120231	110.60349690174134	20	5	2026-07-16 09:03:29.290446+07
+5547	175	0.12269982285014676	110.60309736498924	20	5	2026-07-16 09:03:39.364779+07
+5548	175	0.12295758790444496	110.60299425873063	20	5	2026-07-16 09:03:49.490223+07
+5549	175	0.123318458976287	110.6028782641897	20	5	2026-07-16 09:03:59.542883+07
+5550	175	0.12378243606144913	110.60272360480178	20	5	2026-07-16 09:04:09.594774+07
+5551	175	0.12438818391041155	110.60260761026085	20	5	2026-07-16 09:04:19.632489+07
+5552	175	0.12487793748027519	110.60251739228457	20	5	2026-07-16 09:04:29.724802+07
+5553	175	0.1252774732805117	110.60241428602595	20	5	2026-07-16 09:04:39.767432+07
+5554	175	0.12553523830968352	110.60227251492037	20	5	2026-07-16 09:04:49.859726+07
+5555	175	0.12594766235108124	110.6020405258385	20	5	2026-07-16 09:04:59.898332+07
+5556	175	0.1261925391225784	110.60166676565105	20	5	2026-07-16 09:05:09.941012+07
+5557	175	0.12651474539733873	110.60075169760592	20	5	2026-07-16 09:05:19.994964+07
+5558	175	0.1266178514044249	110.60071303275892	20	5	2026-07-16 09:05:30.039242+07
+5559	175	0.12686272816959912	110.60095791012311	20	5	2026-07-16 09:05:40.079262+07
+5560	175	0.12719782268660207	110.6010996812287	20	5	2026-07-16 09:05:50.171317+07
+5561	175	0.1272880404404282	110.60116412264034	20	5	2026-07-16 09:06:00.298019+07
+5562	175	0.12770046445395156	110.60128011718128	20	5	2026-07-16 09:06:10.424772+07
+5563	175	0.12338290023859251	110.60558480347815	20	5	2026-07-16 09:06:20.469922+07
+5564	175	0.12311224693583053	110.6054043675256	20	5	2026-07-16 09:06:30.500476+07
+5565	175	0.12300914091500435	110.60478572997395	20	5	2026-07-16 09:06:40.552013+07
+5566	175	0.12285448188302084	110.60408976272834	20	5	2026-07-16 09:06:50.647751+07
+5567	175	0.12275137586120231	110.60349690174134	20	5	2026-07-16 09:07:00.933371+07
+5568	175	0.12269982285014676	110.60309736498924	20	5	2026-07-16 09:07:11.001944+07
+5569	175	0.12295758790444496	110.60299425873063	20	5	2026-07-16 09:07:21.057428+07
+5570	175	0.123318458976287	110.6028782641897	20	5	2026-07-16 09:07:31.104807+07
+5571	175	0.12378243606144913	110.60272360480178	20	5	2026-07-16 09:07:41.148427+07
+5572	175	0.12438818391041155	110.60260761026085	20	5	2026-07-16 09:07:51.256937+07
+5573	175	0.12487793748027519	110.60251739228457	20	5	2026-07-16 09:08:01.364211+07
+5574	175	0.1252774732805117	110.60241428602595	20	5	2026-07-16 09:08:11.451309+07
+5575	175	0.12553523830968352	110.60227251492037	20	5	2026-07-16 09:08:21.499295+07
+5576	175	0.12594766235108124	110.6020405258385	20	5	2026-07-16 09:08:31.665734+07
+5577	175	0.1261925391225784	110.60166676565105	20	5	2026-07-16 09:08:41.731563+07
+5578	175	0.12651474539733873	110.60075169760592	20	5	2026-07-16 09:08:51.830582+07
+5579	175	0.1266178514044249	110.60071303275892	20	5	2026-07-16 09:09:01.957141+07
+5580	175	0.12686272816959912	110.60095791012311	20	5	2026-07-16 09:09:12.003658+07
+5581	175	0.12719782268660207	110.6010996812287	20	5	2026-07-16 09:09:22.04764+07
+5582	175	0.1272880404404282	110.60116412264034	20	5	2026-07-16 09:09:32.08961+07
+5583	175	0.12770046445395156	110.60128011718128	20	5	2026-07-16 09:09:42.209626+07
+5584	175	0.12338290023859251	110.60558480347815	20	5	2026-07-16 09:09:52.310885+07
+5585	175	0.12311224693583053	110.6054043675256	20	5	2026-07-16 09:10:02.35755+07
+5586	175	0.12300914091500435	110.60478572997395	20	5	2026-07-16 09:10:12.401893+07
+5587	175	0.12285448188302084	110.60408976272834	20	5	2026-07-16 09:10:22.436212+07
+5588	175	0.12275137586120231	110.60349690174134	20	5	2026-07-16 09:10:32.555179+07
+5589	175	0.12269982285014676	110.60309736498924	20	5	2026-07-16 09:10:42.873648+07
+5590	175	0.12295758790444496	110.60299425873063	20	5	2026-07-16 09:10:53.041221+07
+5591	175	0.123318458976287	110.6028782641897	20	5	2026-07-16 09:11:03.208203+07
+5592	175	0.12378243606144913	110.60272360480178	20	5	2026-07-16 09:11:13.332238+07
+5593	175	0.12438818391041155	110.60260761026085	20	5	2026-07-16 09:11:23.367765+07
+5594	175	0.12487793748027519	110.60251739228457	20	5	2026-07-16 09:11:33.402711+07
+5595	175	0.1252774732805117	110.60241428602595	20	5	2026-07-16 09:11:43.613583+07
+5596	175	0.12553523830968352	110.60227251492037	20	5	2026-07-16 09:11:53.670296+07
+5597	175	0.12594766235108124	110.6020405258385	20	5	2026-07-16 09:12:03.803988+07
+5598	175	0.1261925391225784	110.60166676565105	20	5	2026-07-16 09:12:13.909674+07
+5599	175	0.12651474539733873	110.60075169760592	20	5	2026-07-16 09:12:23.958557+07
+5600	175	0.1266178514044249	110.60071303275892	20	5	2026-07-16 09:12:33.993478+07
+5601	175	0.12686272816959912	110.60095791012311	20	5	2026-07-16 09:12:44.112343+07
+5602	175	0.12719782268660207	110.6010996812287	20	5	2026-07-16 09:12:55.090896+07
+5603	175	0.1272880404404282	110.60116412264034	20	5	2026-07-16 09:13:06.100947+07
+5604	175	0.12770046445395156	110.60128011718128	20	5	2026-07-16 09:13:17.085104+07
+5605	175	0.12338290023859251	110.60558480347815	20	5	2026-07-16 09:13:28.1299+07
+5606	175	0.12311224693583053	110.6054043675256	20	5	2026-07-16 09:13:39.103493+07
+5607	175	0.12300914091500435	110.60478572997395	20	5	2026-07-16 09:16:48.1637+07
+5608	175	0.12338290023859251	110.60558480347815	20	5	2026-07-17 11:25:26.026662+07
+5609	175	0.12311224693583053	110.6054043675256	20	5	2026-07-17 11:25:36.10142+07
+5610	175	0.12300914091500435	110.60478572997395	20	5	2026-07-17 11:25:47.004381+07
+5611	175	0.12285448188302084	110.60408976272834	20	5	2026-07-17 11:25:57.304667+07
+5612	175	0.12275137586120231	110.60349690174134	20	5	2026-07-17 11:26:07.456977+07
+5613	175	0.12269982285014676	110.60309736498924	20	5	2026-07-17 11:26:17.570204+07
+5614	175	0.12295758790444496	110.60299425873063	20	5	2026-07-17 11:26:27.62327+07
+5615	175	0.123318458976287	110.6028782641897	20	5	2026-07-17 11:26:37.66556+07
+5616	175	0.12378243606144913	110.60272360480178	20	5	2026-07-17 11:26:47.706818+07
+5617	175	0.12438818391041155	110.60260761026085	20	5	2026-07-17 11:26:57.809116+07
+5618	175	0.12487793748027519	110.60251739228457	20	5	2026-07-17 11:27:07.938754+07
+5619	175	0.1252774732805117	110.60241428602595	20	5	2026-07-17 11:27:17.982092+07
+5620	175	0.12553523830968352	110.60227251492037	20	5	2026-07-17 11:27:28.030868+07
+5621	175	0.12594766235108124	110.6020405258385	20	5	2026-07-17 11:27:38.075244+07
+5622	175	0.1261925391225784	110.60166676565105	20	5	2026-07-17 11:27:48.123763+07
+5623	175	0.12651474539733873	110.60075169760592	20	5	2026-07-17 11:27:58.306904+07
+5624	175	0.1266178514044249	110.60071303275892	20	5	2026-07-17 11:28:08.358559+07
+5625	175	0.12686272816959912	110.60095791012311	20	5	2026-07-17 11:28:18.413798+07
+5626	175	0.12719782268660207	110.6010996812287	20	5	2026-07-17 11:28:28.45759+07
+5627	175	0.1272880404404282	110.60116412264034	20	5	2026-07-17 11:28:38.772388+07
+5628	175	0.12770046445395156	110.60128011718128	20	5	2026-07-17 11:28:49.164462+07
+5629	175	0.12338290023859251	110.60558480347815	20	5	2026-07-17 11:29:00.148286+07
 \.
 
 
@@ -1146,7 +1135,7 @@ COPY public.users_permissions (user_id, permission_id) FROM stdin;
 -- Name: alokasi_harian_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
-SELECT pg_catalog.setval('public.alokasi_harian_id_seq', 9, true);
+SELECT pg_catalog.setval('public.alokasi_harian_id_seq', 13, true);
 
 
 --
@@ -1188,7 +1177,7 @@ SELECT pg_catalog.setval('public.kelurahan_id_seq', 164, true);
 -- Name: pedagang_lokal_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
-SELECT pg_catalog.setval('public.pedagang_lokal_id_seq', 20, true);
+SELECT pg_catalog.setval('public.pedagang_lokal_id_seq', 23, true);
 
 
 --
@@ -1202,49 +1191,49 @@ SELECT pg_catalog.setval('public.pending_sppg_id_seq', 1, false);
 -- Name: penduduk_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
-SELECT pg_catalog.setval('public.penduduk_id_seq', 1, false);
+SELECT pg_catalog.setval('public.penduduk_id_seq', 56, true);
 
 
 --
 -- Name: pengeluaran_harian_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
-SELECT pg_catalog.setval('public.pengeluaran_harian_id_seq', 20, true);
+SELECT pg_catalog.setval('public.pengeluaran_harian_id_seq', 73, true);
 
 
 --
 -- Name: pengiriman_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
-SELECT pg_catalog.setval('public.pengiriman_id_seq', 185, true);
+SELECT pg_catalog.setval('public.pengiriman_id_seq', 189, true);
 
 
 --
 -- Name: pengukuran_anak_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
-SELECT pg_catalog.setval('public.pengukuran_anak_id_seq', 1, false);
+SELECT pg_catalog.setval('public.pengukuran_anak_id_seq', 6, true);
 
 
 --
 -- Name: pengukuran_balita_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
-SELECT pg_catalog.setval('public.pengukuran_balita_id_seq', 1, false);
+SELECT pg_catalog.setval('public.pengukuran_balita_id_seq', 3, true);
 
 
 --
 -- Name: pengukuran_bumil_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
-SELECT pg_catalog.setval('public.pengukuran_bumil_id_seq', 1, false);
+SELECT pg_catalog.setval('public.pengukuran_bumil_id_seq', 2, true);
 
 
 --
 -- Name: pengukuran_busui_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
-SELECT pg_catalog.setval('public.pengukuran_busui_id_seq', 1, false);
+SELECT pg_catalog.setval('public.pengukuran_busui_id_seq', 3, true);
 
 
 --
@@ -1258,14 +1247,14 @@ SELECT pg_catalog.setval('public.permissions_id_seq', 2, true);
 -- Name: posyandu_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
-SELECT pg_catalog.setval('public.posyandu_id_seq', 10, true);
+SELECT pg_catalog.setval('public.posyandu_id_seq', 12, true);
 
 
 --
 -- Name: produksi_harian_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
-SELECT pg_catalog.setval('public.produksi_harian_id_seq', 3, true);
+SELECT pg_catalog.setval('public.produksi_harian_id_seq', 5, true);
 
 
 --
@@ -1279,14 +1268,14 @@ SELECT pg_catalog.setval('public.roles_id_seq', 6, true);
 -- Name: sekolah_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
-SELECT pg_catalog.setval('public.sekolah_id_seq', 59, true);
+SELECT pg_catalog.setval('public.sekolah_id_seq', 62, true);
 
 
 --
 -- Name: sppg_divisi_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
-SELECT pg_catalog.setval('public.sppg_divisi_id_seq', 1, false);
+SELECT pg_catalog.setval('public.sppg_divisi_id_seq', 5, true);
 
 
 --
@@ -1307,19 +1296,19 @@ SELECT pg_catalog.setval('public.sppg_invitations_id_seq', 9, true);
 -- Name: tracking_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
-SELECT pg_catalog.setval('public.tracking_id_seq', 5541, true);
+SELECT pg_catalog.setval('public.tracking_id_seq', 5637, true);
 
 
 --
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 87, true);
+SELECT pg_catalog.setval('public.users_id_seq', 96, true);
 
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict fupdeFMCush2nFl10GZg5Sk6RF6DLF5au4AbEb6oTBkrUgBfjjYsN3xMSAD70Yc
+\unrestrict i2fkxHe4yzB3qCkiXfU9rG2yPb6aha65vGjlIOdyTxLFK8VTHkongoMgF5uAfbA
 
