@@ -38,6 +38,7 @@ VALUES
         'posyandu:read',
         'posyandu:write',
         'pengiriman:read',
+        'pengiriman:write',
         'tracking:read',
         'driver:read',
         'driver:write'

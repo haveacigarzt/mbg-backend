@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict GlVolLlnKW0A5mfoR6MzBgX5DyQsYGenMSXDyE7EBdbE8fueSdYKr3EqP73xudH
+\restrict dOnB91Qu47o1Fyv2RRaS8i85quV5vv6DtGhzSf5fxkgWpniTeJR2jfY7ZBwT502
 
 -- Dumped from database version 18.3
 -- Dumped by pg_dump version 18.3
@@ -215,20 +215,6 @@ COPY public.kelurahan (id, created_at, kecamatan_id, name, version) FROM stdin;
 
 
 --
--- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: rian
---
-
-COPY public.roles (id, name, permissions) FROM stdin;
-1	admin	{akunsppg:write,akunsppg:read,sppg:read,sekolah:read,posyandu:read,pengiriman:read,tracking:read}
-2	stakeholder	{sppg:read,sekolah:read,posyandu:read,pengiriman:read,tracking:read}
-3	sppg	{sppg:read,sppg:write,sekolah:read,sekolah:write,posyandu:read,posyandu:write,pengiriman:read,tracking:read,driver:read,driver:write,pengiriman:write}
-4	driver	{pengiriman:read,tracking:read,tracking:write,pengiriman:write}
-5	posyandu	{posyandu:read,posyandu:write,balita:read,balita:write,bumil:read,bumil:write,busui:read,busui:write,aps:read,aps:write,ats:read,ats:write,pengukuran_balita:read,pengukuran_balita:write,pengukuran_bumil:read,pengukuran_bumil:write,pengukuran_busui:read,pengukuran_busui:write,pengukuran_aps:read,pengukuran_aps:write,pengukuran_ats:read,pengukuran_ats:write}
-6	sekolah	{sekolah:read,sekolah:write,peserta_didik:read,peserta_didik:write,pengukuran_peserta_didik:read,pengukuran_peserta_didik:write}
-\.
-
-
---
 -- Name: kecamatan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
@@ -243,15 +229,8 @@ SELECT pg_catalog.setval('public.kelurahan_id_seq', 164, true);
 
 
 --
--- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
---
-
-SELECT pg_catalog.setval('public.roles_id_seq', 6, true);
-
-
---
 -- PostgreSQL database dump complete
 --
 
-\unrestrict GlVolLlnKW0A5mfoR6MzBgX5DyQsYGenMSXDyE7EBdbE8fueSdYKr3EqP73xudH
+\unrestrict dOnB91Qu47o1Fyv2RRaS8i85quV5vv6DtGhzSf5fxkgWpniTeJR2jfY7ZBwT502
 
