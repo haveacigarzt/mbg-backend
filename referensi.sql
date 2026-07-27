@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict Pozn4HyQhPhFnHmvl6eR6PPsNyLHQE8ik8A6F4TaEBJZu9fw6G1M0rh7rqGpAIZ
+\restrict GlVolLlnKW0A5mfoR6MzBgX5DyQsYGenMSXDyE7EBdbE8fueSdYKr3EqP73xudH
 
 -- Dumped from database version 18.3
 -- Dumped by pg_dump version 18.3
@@ -18,22 +18,6 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- Data for Name: divisi_sppg; Type: TABLE DATA; Schema: public; Owner: rian
---
-
-COPY public.divisi_sppg (id, created_at, updated_at, nama, urutan) FROM stdin;
-1	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Persiapan	1
-2	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Produksi (Masak)	2
-3	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Pemorsian	3
-4	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Distribusi & Kurir	4
-5	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Pencucian Alat	5
-6	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Kebersihan	6
-7	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Keamanan (Security)	7
-8	2026-07-27 09:16:28+07	2026-07-27 09:16:28+07	Asisten Lapangan (ASLAP)	8
-\.
-
 
 --
 -- Data for Name: kecamatan; Type: TABLE DATA; Schema: public; Owner: rian
@@ -245,13 +229,6 @@ COPY public.roles (id, name, permissions) FROM stdin;
 
 
 --
--- Name: divisi_sppg_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
---
-
-SELECT pg_catalog.setval('public.divisi_sppg_id_seq', 8, true);
-
-
---
 -- Name: kecamatan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: rian
 --
 
@@ -276,5 +253,5 @@ SELECT pg_catalog.setval('public.roles_id_seq', 6, true);
 -- PostgreSQL database dump complete
 --
 
-\unrestrict Pozn4HyQhPhFnHmvl6eR6PPsNyLHQE8ik8A6F4TaEBJZu9fw6G1M0rh7rqGpAIZ
+\unrestrict GlVolLlnKW0A5mfoR6MzBgX5DyQsYGenMSXDyE7EBdbE8fueSdYKr3EqP73xudH
 
