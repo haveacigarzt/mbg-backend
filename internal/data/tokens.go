@@ -13,6 +13,8 @@ import (
 const (
 	ScopeActivation     = "activation"
 	ScopeAuthentication = "authentication"
+	ScopeRefresh        = "refresh"
+	ScopePasswordReset  = "password_reset"
 )
 
 type Token struct {
@@ -64,6 +66,14 @@ func (m TokenModel) New(userID int64, ttl time.Duration, scope string) (*Token, 
 		return nil, err
 	}
 	err = m.Insert(token)
+	return token, err
+}
+
+func (m TokenModel) NewNotSave(userID int64, ttl time.Duration, scope string) (*Token, error) {
+	token, err := generateToken(userID, ttl, scope)
+	if err != nil {
+		return nil, err
+	}
 	return token, err
 }
 

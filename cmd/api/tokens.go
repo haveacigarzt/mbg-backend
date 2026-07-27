@@ -57,15 +57,16 @@ func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 	}
 	// Otherwise, if the password is correct, we generate a new token with a 24-hour
 	// expiry time and the scope 'authentication'.
-	token, err := app.models.Tokens.New(user.ID, 24*time.Hour, data.ScopeAuthentication)
-	// token, err := app.models.Tokens.New(user.ID, 3*time.Minute, data.ScopeAuthentication)
+	access_token, err := app.models.Tokens.New(user.ID, 24*time.Hour, data.ScopeAuthentication)
+	// access_token, err := app.models.Tokens.NewNotSave(user.ID, 30*time.Minute, data.ScopeAuthentication)
+	// refresh_token, err := app.models.Tokens.New(user.ID, 30*24*time.Hour, data.ScopeRefresh)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
 	// Encode the token to JSON and send it in the response along with a 201 Created
 	// status code.
-	err = app.writeJSON(w, http.StatusCreated, envelope{"authentication_token": token}, nil)
+	err = app.writeJSON(w, http.StatusCreated, envelope{"authentication_token": access_token}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
