@@ -205,10 +205,10 @@ func (app *application) requirePermission(code string, next http.HandlerFunc) ht
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		// Retrieve the user from the request context.
 		user := app.contextGetUser(r)
-		fmt.Println("ID:", user.ID)
-		fmt.Println("Email:", user.Email)
-		fmt.Println("RoleID:", user.RoleID)
-		fmt.Println("Activated:", user.Activated)
+		// fmt.Println("ID:", user.ID)
+		// fmt.Println("Email:", user.Email)
+		// fmt.Println("RoleID:", user.RoleID)
+		// fmt.Println("Activated:", user.Activated)
 		// Get the slice of permissions for the user.
 		permissions, err := app.models.Permissions.GetAllForUser(user.RoleID)
 		if err != nil {

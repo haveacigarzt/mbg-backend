@@ -743,6 +743,7 @@ func (app *application) createSPPGPengeluaranHarianHandler(w http.ResponseWriter
 		"type": "keuangan:updated",
 		"data": BuildRingkasan(alokasiHarianAll, pengeluaranHarianAll),
 	}
+	fmt.Println("keuangan:updated")
 	jsonData, _ := json.Marshal(payload)
 	app.hub.BroadcastToRoom("open", jsonData)
 

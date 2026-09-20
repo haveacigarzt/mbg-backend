@@ -18,6 +18,15 @@ type Busui struct {
 	AsiEksklusif      bool      `json:"asi_eksklusif"`
 }
 
+type BSResponse struct {
+	TanggalPersalinan time.Time `json:"tanggal_persalinan"`
+	AnakKe            int8      `json:"anak_ke"`
+	AsiEksklusif      bool      `json:"asi_eksklusif"`
+	PosyanduID        int64     `json:"posyandu_id"`
+	PosyanduNama      string    `json:"posyandu_nama"`
+	StatusAktif       bool      `json:"status_aktif"`
+}
+
 type BusuiResponse struct {
 	Penduduk struct {
 		ID            int64  `json:"id"`
@@ -30,13 +39,7 @@ type BusuiResponse struct {
 		Alamat        string `json:"alamat"`
 		NoHP          string `json:"no_hp"`
 	} `json:"penduduk"`
-	Busui struct {
-		TanggalPersalinan time.Time `json:"tanggal_persalinan"`
-		AnakKe            int8      `json:"anak_ke"`
-		AsiEksklusif      bool      `json:"asi_eksklusif"`
-		PosyanduID        int64     `json:"posyandu_id"`
-		PosyanduNama      string    `json:"posyandu_nama"`
-	} `json:"busui"`
+	Busui BSResponse `json:"busui"`
 }
 
 func ValidateBusui(v *validator.Validator, b *Busui) {
@@ -97,6 +100,7 @@ func (m BusuiModel) GetAll(posyandu_id int64, nama string, filters Filters) ([]*
 			b.anak_ke,
 			b.asi_eksklusif,
 			b.posyandu_id,
+			b.status_aktif,
 			pos.nama
 	FROM busui b
 	JOIN penduduk p ON p.id = b.penduduk_id
@@ -129,30 +133,31 @@ func (m BusuiModel) GetAll(posyandu_id int64, nama string, filters Filters) ([]*
 
 	for rows.Next() {
 
-		var bumil BusuiResponse
+		var busui BusuiResponse
 
 		err := rows.Scan(
 			&totalRecords,
-			&bumil.Penduduk.ID,
-			&bumil.Penduduk.NIK,
-			&bumil.Penduduk.Nama,
-			&bumil.Penduduk.JenisKelamin,
-			&bumil.Penduduk.TanggalLahir,
-			&bumil.Penduduk.KelurahanID,
-			&bumil.Penduduk.KelurahanNama,
-			&bumil.Penduduk.Alamat,
-			&bumil.Penduduk.NoHP,
-			&bumil.Busui.TanggalPersalinan,
-			&bumil.Busui.AnakKe,
-			&bumil.Busui.AsiEksklusif,
-			&bumil.Busui.PosyanduID,
-			&bumil.Busui.PosyanduNama,
+			&busui.Penduduk.ID,
+			&busui.Penduduk.NIK,
+			&busui.Penduduk.Nama,
+			&busui.Penduduk.JenisKelamin,
+			&busui.Penduduk.TanggalLahir,
+			&busui.Penduduk.KelurahanID,
+			&busui.Penduduk.KelurahanNama,
+			&busui.Penduduk.Alamat,
+			&busui.Penduduk.NoHP,
+			&busui.Busui.TanggalPersalinan,
+			&busui.Busui.AnakKe,
+			&busui.Busui.AsiEksklusif,
+			&busui.Busui.PosyanduID,
+			&busui.Busui.StatusAktif,
+			&busui.Busui.PosyanduNama,
 		)
 		if err != nil {
 			return nil, Metadata{}, err
 		}
 
-		busui_all = append(busui_all, &bumil)
+		busui_all = append(busui_all, &busui)
 	}
 
 	if err = rows.Err(); err != nil {

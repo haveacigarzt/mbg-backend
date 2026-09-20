@@ -19,6 +19,17 @@ type Balita struct {
 	PanjangLahir int    `json:"panjang_lahir"`
 }
 
+type BAResponse struct {
+	IbuID        int64  `json:"ibu_id"`
+	IbuNama      string `json:"ibu_nama"`
+	AnakKe       int8   `json:"anak_ke"`
+	BeratLahir   int    `json:"berat_lahir"`
+	PanjangLahir int    `json:"panjang_lahir"`
+	PosyanduID   int64  `json:"posyandu_id"`
+	PosyanduNama string `json:"posyandu_nama"`
+	StatusAktif  bool   `json:"status_aktif"`
+}
+
 type BalitaResponse struct {
 	Penduduk struct {
 		ID            int64  `json:"id"`
@@ -31,15 +42,7 @@ type BalitaResponse struct {
 		Alamat        string `json:"alamat"`
 		NoHP          string `json:"no_hp"`
 	} `json:"penduduk"`
-	Balita struct {
-		IbuID        int64  `json:"ibu_id"`
-		IbuNama      string `json:"ibu_nama"`
-		AnakKe       int8   `json:"anak_ke"`
-		BeratLahir   int    `json:"berat_lahir"`
-		PanjangLahir int    `json:"panjang_lahir"`
-		PosyanduID   int64  `json:"posyandu_id"`
-		PosyanduNama string `json:"posyandu_nama"`
-	} `json:"balita"`
+	Balita BAResponse `json:"balita"`
 }
 
 func ValidateBalita(v *validator.Validator, b *Balita) {
@@ -115,6 +118,7 @@ func (m BalitaModel) GetAll(posyandu_id int64, nama string, filters Filters) ([]
 			b.berat_lahir,
 			b.panjang_lahir,
 			b.posyandu_id,
+			b.status_aktif,
 			pos.nama
 	FROM balita b
 	JOIN penduduk p ON p.id = b.penduduk_id
@@ -167,6 +171,7 @@ func (m BalitaModel) GetAll(posyandu_id int64, nama string, filters Filters) ([]
 			&balita.Balita.BeratLahir,
 			&balita.Balita.PanjangLahir,
 			&balita.Balita.PosyanduID,
+			&balita.Balita.StatusAktif,
 			&balita.Balita.PosyanduNama,
 		)
 		if err != nil {

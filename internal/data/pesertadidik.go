@@ -23,6 +23,15 @@ type PesertaDidik struct {
 	StatusAktif bool `json:"status_aktif"`
 }
 
+type PDResponse struct {
+	NISN        string `json:"nisn"`
+	Kelas       string `json:"kelas"`
+	Rombel      string `json:"rombel"`
+	SekolahID   int64  `json:"sekolah_id"`
+	StatusAktif bool   `json:"status_aktif"`
+	SekolahNama string `json:"sekolah_nama"`
+}
+
 type PesertaDidikResponse struct {
 	Penduduk struct {
 		ID            int64  `json:"id"`
@@ -35,14 +44,7 @@ type PesertaDidikResponse struct {
 		Alamat        string `json:"alamat"`
 		NoHP          string `json:"no_hp"`
 	} `json:"penduduk"`
-	PesertaDidik struct {
-		NISN        string `json:"nisn"`
-		Kelas       string `json:"kelas"`
-		Rombel      string `json:"rombel"`
-		SekolahID   int64  `json:"sekolah_id"`
-		StatusAktif bool   `json:"status_aktif"`
-		SekolahNama string `json:"sekolah_nama"`
-	} `json:"peserta_didik"`
+	PesertaDidik PDResponse `json:"peserta_didik"`
 }
 
 func ValidatePesertaDidik(v *validator.Validator, pd *PesertaDidik) {
@@ -187,6 +189,50 @@ func (m PesertaDidikModel) GetAll(sekolah_id int64, nama string, filters Filters
 	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
 
 	return peserta_didik_all, metadata, nil
+}
+
+func (m PesertaDidikModel) GetByNISN(nisn string) (*PDResponse, error) {
+	query := `
+		SELECT
+
+			pd.nisn,
+			pd.kelas,
+			pd.rombel,
+			pd.sekolah_id,
+			pd.status_aktif,
+			s.nama AS sekolah_nama
+
+		FROM peserta_didik pd
+
+		LEFT JOIN sekolah s
+			ON s.id = pd.sekolah_id
+
+		WHERE
+			pd.nisn = $1
+	`
+	var response PDResponse
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	err := m.DB.QueryRowContext(ctx, query, nisn).Scan(
+		// Peserta Didik
+		&response.NISN,
+		&response.Kelas,
+		&response.Rombel,
+		&response.SekolahID,
+		&response.StatusAktif,
+		&response.SekolahNama,
+	)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return &response, nil
+
 }
 
 func (m PesertaDidikModel) ValidatePesertaDidikInclude(sekolahID, pendudukID int64) error {

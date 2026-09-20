@@ -22,6 +22,17 @@ type Bumil struct {
 	Abortus int `json:"abortus"`
 }
 
+type BMResponse struct {
+	HPHT         time.Time `json:"hpht"`
+	HPL          time.Time `json:"hpl"`
+	Gravida      int       `json:"gravida"`
+	Para         int       `json:"para"`
+	Abortus      int       `json:"abortus"`
+	PosyanduID   int64     `json:"posyandu_id"`
+	PosyanduNama string    `json:"posyandu_nama"`
+	StatusAktif  bool      `json:"status_aktif"`
+}
+
 type BumilResponse struct {
 	Penduduk struct {
 		ID            int64  `json:"id"`
@@ -34,15 +45,7 @@ type BumilResponse struct {
 		Alamat        string `json:"alamat"`
 		NoHP          string `json:"no_hp"`
 	} `json:"penduduk"`
-	Bumil struct {
-		HPHT         time.Time `json:"hpht"`
-		HPL          time.Time `json:"hpl"`
-		Gravida      int       `json:"gravida"`
-		Para         int       `json:"para"`
-		Abortus      int       `json:"abortus"`
-		PosyanduID   int64     `json:"posyandu_id"`
-		PosyanduNama string    `json:"posyandu_nama"`
-	} `json:"bumil"`
+	Bumil BMResponse `json:"bumil"`
 }
 
 func ValidateBumil(v *validator.Validator, b *Bumil) {
@@ -123,6 +126,7 @@ func (m BumilModel) GetAll(posyandu_id int64, nama string, filters Filters) ([]*
 			b.para,
 			b.abortus,
 			b.posyandu_id,
+			b.status_aktif,
 			pos.nama
 	FROM bumil b
 	JOIN penduduk p ON p.id = b.penduduk_id
@@ -174,6 +178,7 @@ func (m BumilModel) GetAll(posyandu_id int64, nama string, filters Filters) ([]*
 			&bumil.Bumil.Para,
 			&bumil.Bumil.Abortus,
 			&bumil.Bumil.PosyanduID,
+			&bumil.Bumil.StatusAktif,
 			&bumil.Bumil.PosyanduNama,
 		)
 		if err != nil {

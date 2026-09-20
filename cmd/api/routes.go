@@ -16,6 +16,7 @@ func (app *application) routes() http.Handler {
 
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", app.healthcheckHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/kecamatan", app.kecamatanHandler)
+	// router.HandlerFunc(http.MethodGet, "/v1/kelurahanbyid/:id", app.kelurahanByKelurahanIDHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/kelurahan/:id", app.kelurahanHandler)
 
 	// Summary routes
@@ -29,10 +30,12 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/sppg/:id", app.requirePermission("sppg:read", app.getSPPGHandler))
 	router.HandlerFunc(http.MethodPatch, "/v1/sppg/:id", app.requirePermission("sppg:write", app.updateSPPGHandler))
 	router.HandlerFunc(http.MethodPost, "/v1/sppg/:id/alokasiharian", app.requirePermission("sppg:write", app.createSPPGAlokasiHarianHandler))
+
 	router.HandlerFunc(http.MethodPost, "/v1/sppg/:id/pengeluaranharian", app.requirePermission("sppg:write", app.createSPPGPengeluaranHarianHandler))
-	router.HandlerFunc(http.MethodGet, "/v1/sppg/:id/alokasiharian", app.requirePermission("sppg:write", app.getSPPGAlokasiHarianHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/sppg/:id/pengeluaranharian", app.requirePermission("sppg:write", app.listSPPGPengeluaranHarianHandler))
 	router.HandlerFunc(http.MethodDelete, "/v1/sppg/:id/pengeluaranharian/:pengeluaran_id", app.requirePermission("sppg:write", app.deleteSPPGPengeluaranHarianHandler))
+
+	router.HandlerFunc(http.MethodGet, "/v1/sppg/:id/alokasiharian", app.requirePermission("sppg:write", app.getSPPGAlokasiHarianHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/sppg/:id/produksiharian", app.requirePermission("sppg:write", app.getSPPGProduksiHarianHandler))
 	router.HandlerFunc(http.MethodPost, "/v1/sppg/:id/produksiharian", app.requirePermission("sppg:write", app.createSPPGProduksiHarianHandler))
 	router.HandlerFunc(http.MethodPost, "/v1/sppg/:id/divisi", app.requirePermission("sppg:write", app.createSPPGDivisiHandler))
@@ -44,11 +47,16 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/sekolah/:id", app.requirePermission("sekolah:read", app.getSekolahHandler))
 	router.HandlerFunc(http.MethodPatch, "/v1/sekolah/:id", app.requirePermission("sekolah:write", app.updateSekolahHandler))
 	router.HandlerFunc(http.MethodDelete, "/v1/sekolah/:id", app.requirePermission("sekolah:write", app.deleteSekolahHandler))
+
 	// Peserta didik routes
 	router.HandlerFunc(http.MethodPost, "/v1/sekolah/:id/pesertadidik", app.requirePermission("peserta_didik:write", app.createPesertaDidikHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/sekolah/:id/pesertadidik", app.listPesertaDidikHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/sekolah/:id/pesertadidik/pengukuran", app.requirePermission("pengukuran_anak:write", app.createPengukuranPesertaDidikHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/sekolah/:id/pesertadidik/pengukuran", app.requirePermission("pengukuran_anak:read", app.listPengukuranPesertaDidikHandler))
+
+	// Penduduk Routes
+	router.HandlerFunc(http.MethodGet, "/v1/penduduk/:nik", app.getPendudukHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/pesertadidik/:nisn", app.getPesertaDidikByNISNHandler)
 
 	// Posyandu routes
 	router.HandlerFunc(http.MethodGet, "/v1/posyandu", app.listPosyanduHandler)
