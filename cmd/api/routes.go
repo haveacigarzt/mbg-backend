@@ -57,6 +57,7 @@ func (app *application) routes() http.Handler {
 	// Penduduk Routes
 	router.HandlerFunc(http.MethodGet, "/v1/penduduk/:nik", app.getPendudukHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/pesertadidik/:nisn", app.getPesertaDidikByNISNHandler)
+	// router.HandlerFunc(http.MethodPatch, "/v1/pesertadidik/:nisn", app.updatePesertaDidikHandler)
 
 	// Posyandu routes
 	router.HandlerFunc(http.MethodGet, "/v1/posyandu", app.listPosyanduHandler)

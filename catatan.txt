@@ -209,3 +209,4 @@ role id:
 
 npx expo prebuild --clean
 npx expo run:android
+

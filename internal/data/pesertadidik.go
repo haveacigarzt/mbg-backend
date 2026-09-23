@@ -39,6 +39,7 @@ type PesertaDidikResponse struct {
 		Nama          string `json:"nama"`
 		JenisKelamin  string `json:"jenis_kelamin"`
 		TanggalLahir  string `json:"tanggal_lahir"`
+		Umur          string `json:"umur"`
 		KelurahanID   string `json:"kelurahan_id"`
 		KelurahanNama string `json:"kelurahan_nama"`
 		Alamat        string `json:"alamat"`
@@ -110,17 +111,18 @@ func (m PesertaDidikModel) GetAll(sekolah_id int64, nama string, filters Filters
 		SELECT count(*) OVER(),
 			p.id,
 			p.nik,
-			p.nama,
-			p.jenis_kelamin,
-			p.tanggal_lahir,
+			p.nama AS penduduk_nama,
+			p.jenis_kelamin AS penduduk_jenis_kelamin,
+			p.tanggal_lahir AS penduduk_tanggal_lahir,
+			EXTRACT(YEAR FROM AGE(p.tanggal_lahir)) AS penduduk_umur,
 			p.kelurahan_id,
 			k.name,
 			p.alamat,
 			p.no_hp,
 		
 			pd.nisn,
-			pd.kelas,
-			pd.rombel,
+			pd.kelas AS peserta_didik_kelas,
+			pd.rombel AS peserta_didik_rombel,
 			pd.status_aktif,
 			pd.sekolah_id,
 			s.nama
@@ -130,6 +132,7 @@ func (m PesertaDidikModel) GetAll(sekolah_id int64, nama string, filters Filters
 	JOIN kelurahan k ON k.id = p.kelurahan_id
 	WHERE (LOWER(p.nama) LIKE LOWER('%%' || $1 || '%%') OR $1 = '')
   AND pd.sekolah_id = $2
+	AND pd.status_aktif = TRUE
   AND p.deleted_at IS NULL
 	ORDER BY %s %s, p.id ASC
 	LIMIT $3 OFFSET $4`,
@@ -164,6 +167,7 @@ func (m PesertaDidikModel) GetAll(sekolah_id int64, nama string, filters Filters
 			&peserta_didik.Penduduk.Nama,
 			&peserta_didik.Penduduk.JenisKelamin,
 			&peserta_didik.Penduduk.TanggalLahir,
+			&peserta_didik.Penduduk.Umur,
 			&peserta_didik.Penduduk.KelurahanID,
 			&peserta_didik.Penduduk.KelurahanNama,
 			&peserta_didik.Penduduk.Alamat,
@@ -191,36 +195,55 @@ func (m PesertaDidikModel) GetAll(sekolah_id int64, nama string, filters Filters
 	return peserta_didik_all, metadata, nil
 }
 
-func (m PesertaDidikModel) GetByNISN(nisn string) (*PDResponse, error) {
+func (m PesertaDidikModel) GetByNISN(nisn string) (*PesertaDidikResponse, error) {
 	query := `
 		SELECT
+			p.id,
+			p.nik,
+			p.nama AS penduduk_nama,
+			p.jenis_kelamin AS penduduk_jenis_kelamin,
+			p.tanggal_lahir AS penduduk_tanggal_lahir,
+			EXTRACT(YEAR FROM AGE(p.tanggal_lahir)) AS penduduk_umur,
+			p.kelurahan_id,
+			k.name,
+			p.alamat,
+			p.no_hp,
 
 			pd.nisn,
 			pd.kelas,
 			pd.rombel,
-			pd.sekolah_id,
 			pd.status_aktif,
+			pd.sekolah_id,
 			s.nama AS sekolah_nama
 
 		FROM peserta_didik pd
+		JOIN penduduk p ON p.id = pd.penduduk_id
+		JOIN sekolah s ON s.id = pd.sekolah_id
+		JOIN kelurahan k ON k.id = p.kelurahan_id
 
-		LEFT JOIN sekolah s
-			ON s.id = pd.sekolah_id
-
-		WHERE
-			pd.nisn = $1
+		WHERE pd.nisn = $1
 	`
-	var response PDResponse
+	var peserta_didik PesertaDidikResponse
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	err := m.DB.QueryRowContext(ctx, query, nisn).Scan(
 		// Peserta Didik
-		&response.NISN,
-		&response.Kelas,
-		&response.Rombel,
-		&response.SekolahID,
-		&response.StatusAktif,
-		&response.SekolahNama,
+		&peserta_didik.Penduduk.ID,
+		&peserta_didik.Penduduk.NIK,
+		&peserta_didik.Penduduk.Nama,
+		&peserta_didik.Penduduk.JenisKelamin,
+		&peserta_didik.Penduduk.TanggalLahir,
+		&peserta_didik.Penduduk.Umur,
+		&peserta_didik.Penduduk.KelurahanID,
+		&peserta_didik.Penduduk.KelurahanNama,
+		&peserta_didik.Penduduk.Alamat,
+		&peserta_didik.Penduduk.NoHP,
+		&peserta_didik.PesertaDidik.NISN,
+		&peserta_didik.PesertaDidik.Kelas,
+		&peserta_didik.PesertaDidik.Rombel,
+		&peserta_didik.PesertaDidik.StatusAktif,
+		&peserta_didik.PesertaDidik.SekolahID,
+		&peserta_didik.PesertaDidik.SekolahNama,
 	)
 
 	if err != nil {
@@ -231,7 +254,7 @@ func (m PesertaDidikModel) GetByNISN(nisn string) (*PDResponse, error) {
 		return nil, err
 	}
 
-	return &response, nil
+	return &peserta_didik, nil
 
 }
 

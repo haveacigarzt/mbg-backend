@@ -604,8 +604,18 @@ func (app *application) listPesertaDidikHandler(w http.ResponseWriter, r *http.R
 	input.Filters.SortSafelist = []string{
 		"id",
 		"-id",
-		"nama",
-		"-nama",
+		"penduduk_nama",
+		"-penduduk_nama",
+		"penduduk_jenis_kelamin",
+		"-penduduk_jenis_kelamin",
+		"penduduk_tanggal_lahir",
+		"-penduduk_tanggal_lahir",
+		"penduduk_umur",
+		"-penduduk_umur",
+		"peserta_didik_kelas",
+		"-peserta_didik_kelas",
+		"peserta_didik_rombel",
+		"-peserta_didik_rombel",
 	}
 
 	if data.ValidateFilters(v, input.Filters); !v.Valid() {
