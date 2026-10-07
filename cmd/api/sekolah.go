@@ -459,6 +459,8 @@ func (app *application) createPesertaDidikHandler(w http.ResponseWriter, r *http
 		return
 	}
 
+	fmt.Println("masuk sini dah")
+
 	v := validator.New()
 
 	tanggalLahir, err := time.Parse("2006-01-02", input.Penduduk.TanggalLahir)
@@ -494,77 +496,149 @@ func (app *application) createPesertaDidikHandler(w http.ResponseWriter, r *http
 		app.failedValidationResponse(w, r, v.Errors)
 		return
 	}
-	ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
-	defer cancel()
 
-	tx, err := app.models.DB.BeginTx(ctx, nil)
+	pendudukOld, err := app.models.Penduduk.Get(penduduk.NIK)
 	if err != nil {
-		fmt.Println("error begintx")
-		app.serverErrorResponse(w, r, err)
-		return
-	}
-
-	defer tx.Rollback()
-
-	err = app.models.Penduduk.InsertTx(ctx, tx, penduduk)
-	if err != nil {
-		fmt.Println("error penduduk inserttx")
 		switch {
-		case errors.Is(err, data.ErrDuplicateNIK):
-			v := validator.New()
-			v.AddError("nik", "NIK sudah terdaftar")
-			app.failedValidationResponse(w, r, v.Errors)
-
+		case errors.Is(err, data.ErrRecordNotFound):
+			pendudukOld = nil
 		default:
 			app.serverErrorResponse(w, r, err)
+			return
 		}
-		return
 	}
 
-	pesertaDidik := &data.PesertaDidik{
-		SekolahID:  sekolah.ID,
-		PendudukID: penduduk.ID,
-		NISN:       input.PesertaDidik.NISN,
-		Kelas:      input.PesertaDidik.Kelas,
-		Rombel:     input.PesertaDidik.Rombel,
-	}
+	fmt.Println("masuk sini dah 2")
 
-	// Initialize a new Validator instance.
-	pesertaDidikValidator := validator.New()
+	// Jika data tidak ditemukan
+	if pendudukOld == nil {
+		ctx, cancel := context.WithTimeout(r.Context(), 3*time.Second)
+		defer cancel()
 
-	if data.ValidatePesertaDidik(pesertaDidikValidator, pesertaDidik); !pesertaDidikValidator.Valid() {
-		app.failedValidationResponse(w, r, pesertaDidikValidator.Errors)
-		return
-	}
+		tx, err := app.models.DB.BeginTx(ctx, nil)
+		if err != nil {
+			fmt.Println("error begintx")
+			app.serverErrorResponse(w, r, err)
+			return
+		}
 
-	err = app.models.PesertaDidik.InsertTx(ctx, tx, pesertaDidik)
-	if err != nil {
-		fmt.Println("error peserta didik inserttx")
-		switch {
-		case errors.Is(err, data.ErrDuplicateNISN):
-			v := validator.New()
-			v.AddError("nisn", "NISN sudah terdaftar")
-			app.failedValidationResponse(w, r, v.Errors)
+		defer tx.Rollback()
 
-		default:
+		err = app.models.Penduduk.InsertTx(ctx, tx, penduduk)
+		if err != nil {
+			fmt.Println("error penduduk inserttx")
+			switch {
+			case errors.Is(err, data.ErrDuplicateNIK):
+				v := validator.New()
+				v.AddError("nik", "NIK sudah terdaftar")
+				app.failedValidationResponse(w, r, v.Errors)
+
+			default:
+				app.serverErrorResponse(w, r, err)
+			}
+			return
+		}
+
+		pesertaDidik := &data.PesertaDidik{
+			SekolahID:  sekolah.ID,
+			PendudukID: penduduk.ID,
+			NISN:       input.PesertaDidik.NISN,
+			Kelas:      input.PesertaDidik.Kelas,
+			Rombel:     input.PesertaDidik.Rombel,
+		}
+
+		// Initialize a new Validator instance.
+		pesertaDidikValidator := validator.New()
+
+		if data.ValidatePesertaDidik(pesertaDidikValidator, pesertaDidik); !pesertaDidikValidator.Valid() {
+			app.failedValidationResponse(w, r, pesertaDidikValidator.Errors)
+			return
+		}
+
+		err = app.models.PesertaDidik.InsertTx(ctx, tx, pesertaDidik)
+		if err != nil {
+			fmt.Println("error peserta didik inserttx")
+			switch {
+			case errors.Is(err, data.ErrDuplicateNISN):
+				v := validator.New()
+				v.AddError("nisn", "NISN sudah terdaftar")
+				app.failedValidationResponse(w, r, v.Errors)
+
+			default:
+				app.serverErrorResponse(w, r, err)
+			}
+			return
+		}
+
+		err = tx.Commit()
+		if err != nil {
+			fmt.Println("error commit")
+			app.serverErrorResponse(w, r, err)
+			return
+		}
+
+		headers := make(http.Header)
+		headers.Set("Location", fmt.Sprintf("/v1/sekolah/%d", sekolah.ID))
+
+		err = app.writeJSON(w, http.StatusCreated, envelope{"peserta_didik": pesertaDidik}, headers)
+		if err != nil {
 			app.serverErrorResponse(w, r, err)
 		}
-		return
-	}
 
-	err = tx.Commit()
-	if err != nil {
-		fmt.Println("error commit")
-		app.serverErrorResponse(w, r, err)
-		return
-	}
+	} else {
+		pesertaDidik := &data.PesertaDidik{
+			SekolahID:  sekolah.ID,
+			PendudukID: pendudukOld.Penduduk.ID,
+			NISN:       input.PesertaDidik.NISN,
+			Kelas:      input.PesertaDidik.Kelas,
+			Rombel:     input.PesertaDidik.Rombel,
+		}
 
-	headers := make(http.Header)
-	headers.Set("Location", fmt.Sprintf("/v1/sekolah/%d", sekolah.ID))
+		// Initialize a new Validator instance.
+		pesertaDidikValidator := validator.New()
 
-	err = app.writeJSON(w, http.StatusCreated, envelope{"peserta_didik": pesertaDidik}, headers)
-	if err != nil {
-		app.serverErrorResponse(w, r, err)
+		if data.ValidatePesertaDidik(pesertaDidikValidator, pesertaDidik); !pesertaDidikValidator.Valid() {
+			app.failedValidationResponse(w, r, pesertaDidikValidator.Errors)
+			return
+		}
+		fmt.Println("masuk sini dah 3")
+		fmt.Println(pendudukOld.Penduduk.Kategori)
+		// cek kategori
+		if pendudukOld.Penduduk.Kategori == "PESERTA_DIDIK" {
+			// jika kategori pd, update pd (sekolah, kelas, rombel)
+			err = app.models.PesertaDidik.UpdatePDOnly(pesertaDidik)
+			if err != nil {
+				switch {
+				case errors.Is(err, data.ErrEditConflict):
+					app.editConflictResponse(w, r)
+				default:
+					app.serverErrorResponse(w, r, err)
+				}
+				return
+			}
+		} else {
+			// jika kategori balita, update p (kategori), delete balita & update pd (sekolah, nisn, kelas, rombel)
+			fmt.Println("masuk disini")
+			err = app.models.PesertaDidik.UpdateFrom3B(pesertaDidik, pendudukOld.Penduduk.Kategori)
+			if err != nil {
+				switch {
+				case errors.Is(err, data.ErrEditConflict):
+					fmt.Println("error disini")
+					app.editConflictResponse(w, r)
+				default:
+					app.serverErrorResponse(w, r, err)
+				}
+				return
+			}
+		}
+
+		headers := make(http.Header)
+		headers.Set("Location", fmt.Sprintf("/v1/sekolah/%d", sekolah.ID))
+
+		err = app.writeJSON(w, http.StatusCreated, envelope{"peserta_didik": pesertaDidik}, headers)
+		if err != nil {
+			app.serverErrorResponse(w, r, err)
+		}
 	}
 }
 
@@ -630,6 +704,200 @@ func (app *application) listPesertaDidikHandler(w http.ResponseWriter, r *http.R
 	}
 	// Send a JSON response containing the movie data.
 	err = app.writeJSON(w, http.StatusOK, envelope{"peserta_didik": peserta_didik, "metadata": metadata}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
+func (app *application) getPesertaDidikByNISNHandler(w http.ResponseWriter, r *http.Request) {
+
+	nisn, err := app.readStringParam(r, "nisn")
+	if err != nil || len(nisn) != 10 {
+		err = app.writeJSON(w, http.StatusOK, envelope{"peserta_didik": nil}, nil)
+		if err != nil {
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	peserta_didik, err := app.models.PesertaDidik.GetByNISN(nisn)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			err = app.writeJSON(w, http.StatusOK, envelope{"peserta_didik": nil}, nil)
+			if err != nil {
+				app.serverErrorResponse(w, r, err)
+			}
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"peserta_didik": peserta_didik}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
+func (app *application) getPesertaDidikByIDHandler(w http.ResponseWriter, r *http.Request) {
+
+	id, err := app.readIDParam(r)
+	if err != nil || id < 1 {
+		http.NotFound(w, r)
+		return
+	}
+
+	peserta_didik, err := app.models.PesertaDidik.GetByID(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			err = app.writeJSON(w, http.StatusOK, envelope{"peserta_didik": nil}, nil)
+			if err != nil {
+				app.serverErrorResponse(w, r, err)
+			}
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"peserta_didik": peserta_didik}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
+func (app *application) updatePesertaDidikHandler(w http.ResponseWriter, r *http.Request) {
+
+	currUser := app.contextGetUser(r)
+	if currUser.RoleID != 6 {
+		fmt.Println("error role id != 6")
+		app.notPermittedResponse(w, r)
+		return
+	}
+
+	sekolah, err := app.models.Sekolah.GetByUserID(currUser.ID)
+	if err != nil {
+		fmt.Println("error get sekolah")
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	id, err := app.readIDParam(r)
+	if err != nil || id < 1 {
+		http.NotFound(w, r)
+		return
+	}
+
+	peserta_didik, err := app.models.PesertaDidik.GetByID(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	if sekolah.ID != peserta_didik.PesertaDidik.SekolahID {
+		app.notPermittedResponse(w, r)
+		return
+	}
+
+	var input struct {
+		// Data penduduk
+		Penduduk struct {
+			NIK          *string `json:"nik"`
+			Nama         *string `json:"nama"`
+			JenisKelamin *string `json:"jenis_kelamin"`
+			TanggalLahir *string `json:"tanggal_lahir"`
+			KelurahanID  *int64  `json:"kelurahan_id"`
+			Alamat       *string `json:"alamat"`
+			NoHP         *string `json:"no_hp"`
+		} `json:"penduduk"`
+
+		// Data peserta didik
+		PesertaDidik struct {
+			NISN        *string `json:"nisn"`
+			Kelas       *string `json:"kelas"`
+			Rombel      *string `json:"rombel"`
+			StatusAktif *bool   `json:"status_aktif"`
+		} `json:"peserta_didik"`
+	}
+
+	err = app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	if input.Penduduk.Nama != nil {
+		peserta_didik.Penduduk.Nama = *input.Penduduk.Nama
+	}
+
+	if input.Penduduk.NIK != nil {
+		peserta_didik.Penduduk.NIK = *input.Penduduk.NIK
+	}
+
+	if input.Penduduk.Nama != nil {
+		peserta_didik.Penduduk.Nama = *input.Penduduk.Nama
+	}
+
+	if input.Penduduk.JenisKelamin != nil {
+		peserta_didik.Penduduk.JenisKelamin = *input.Penduduk.JenisKelamin
+	}
+
+	if input.Penduduk.TanggalLahir != nil {
+		peserta_didik.Penduduk.TanggalLahir = *input.Penduduk.TanggalLahir
+	}
+
+	if input.Penduduk.KelurahanID != nil {
+		peserta_didik.Penduduk.KelurahanID = *input.Penduduk.KelurahanID
+	}
+
+	if input.Penduduk.Alamat != nil {
+		peserta_didik.Penduduk.Alamat = *input.Penduduk.Alamat
+	}
+
+	if input.Penduduk.NoHP != nil {
+		peserta_didik.Penduduk.NoHP = *input.Penduduk.NoHP
+	}
+
+	if input.PesertaDidik.NISN != nil {
+		peserta_didik.PesertaDidik.NISN = *input.PesertaDidik.NISN
+	}
+
+	if input.PesertaDidik.Kelas != nil {
+		peserta_didik.PesertaDidik.Kelas = *input.PesertaDidik.Kelas
+	}
+
+	if input.PesertaDidik.Rombel != nil {
+		peserta_didik.PesertaDidik.Rombel = *input.PesertaDidik.Rombel
+	}
+
+	if input.PesertaDidik.StatusAktif != nil {
+		peserta_didik.PesertaDidik.StatusAktif = *input.PesertaDidik.StatusAktif
+	}
+
+	err = app.models.PesertaDidik.Update(peserta_didik)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrEditConflict):
+			app.editConflictResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"peserta_didik": peserta_didik}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

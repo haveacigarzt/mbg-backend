@@ -17,6 +17,8 @@ go run ./cmd/api -cors-trusted-origins="http://localhost:9002 http://localhost:9
 
 ./bin/api -port=4040 -db-dsn=postgres://rian:pas55word@localhost/mbg?sslmode=disable -cors-trusted-origins="http://localhost:5173 http://localhost:9001 http://192.168.1.14:3000 http://192.168.1.14:5173 http://192.168.1.14 http://192.168.1.2:5173 http://192.168.1.2"
 
+
+
 Untuk halaman EKSPLORASI DATA TERBUKA - KATALOG DATA TERBUKA:
 GET http://192.168.1.12:4040/v1/summary/penerimamanfaat
 response:
